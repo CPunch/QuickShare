@@ -2,29 +2,19 @@ package sql
 
 import (
 	_ "encoding/json"
-	"time"
 
+	"github.com/CPunch/QuickShare/api/iface"
 	"github.com/blockloop/scan"
 	"github.com/google/uuid"
 )
 
-type FileDBType struct {
-	ID         string    `json:"id"`
-	TokenID    string    `json:"tokenId"`
-	Sha256     string    `json:"hash"`
-	Name       string    `json:"name"`
-	Mime       string    `json:"mime"`
-	UploadIP   string    `json:"uploadIp"`
-	UploadTime time.Time `json:"uploadTime"`
-}
-
-func (db *DBHandler) GetFileById(id string) (*FileDBType, error) {
+func (db *DBHandler) GetFileById(id string) (*iface.File, error) {
 	row, err := db.Query("SELECT * FROM files WHERE ID=?", id)
 	if err != nil {
 		return nil, err
 	}
 
-	var file FileDBType
+	var file iface.File
 	if err := scan.Row(&file, row); err != nil {
 		return nil, err
 	}
@@ -33,13 +23,13 @@ func (db *DBHandler) GetFileById(id string) (*FileDBType, error) {
 }
 
 // files are stored many to one. 1 file on disk can represent many files in the db
-func (db *DBHandler) GetFilesByHash(hash string) (*[]FileDBType, error) {
+func (db *DBHandler) GetFilesByHash(hash string) (*[]iface.File, error) {
 	row, err := db.Query("SELECT * FROM files WHERE Sha256=?", hash)
 	if err != nil {
 		return nil, err
 	}
 
-	var files []FileDBType
+	var files []iface.File
 	if err := scan.Rows(&files, row); err != nil {
 		return nil, err
 	}
@@ -47,10 +37,10 @@ func (db *DBHandler) GetFilesByHash(hash string) (*[]FileDBType, error) {
 	return &files, nil
 }
 
-func (db *DBHandler) GetAllFiles() (*[]FileDBType, error) {
+func (db *DBHandler) GetAllFiles() (*[]iface.File, error) {
 	rows, _ := db.Query("SELECT * FROM files")
 
-	var files []FileDBType
+	var files []iface.File
 	if err := scan.Rows(&files, rows); err != nil {
 		return nil, err
 	}
@@ -58,10 +48,10 @@ func (db *DBHandler) GetAllFiles() (*[]FileDBType, error) {
 	return &files, nil
 }
 
-func (db *DBHandler) GetFilesByToken(token string) (*[]FileDBType, error) {
+func (db *DBHandler) GetFilesByToken(token string) (*[]iface.File, error) {
 	rows, _ := db.Query("SELECT * FROM files WHERE TokenID=?", token)
 
-	var files []FileDBType
+	var files []iface.File
 	if err := scan.Rows(&files, rows); err != nil {
 		return nil, err
 	}
@@ -69,11 +59,11 @@ func (db *DBHandler) GetFilesByToken(token string) (*[]FileDBType, error) {
 	return &files, nil
 }
 
-func (db *DBHandler) InsertFile(token, name, hash, mime string) (*FileDBType, error) {
+func (db *DBHandler) InsertFile(token, name, hash, mime string) (*iface.File, error) {
 	// TODO: ID should be a slug, short and human readable
 	rows, _ := db.Query("INSERT INTO files(ID, TokenID, Name, Sha256, Mime) VALUES(?, ?, ?, ?, ?) RETURNING *", uuid.New().String(), token, name, hash, mime)
 
-	var dbFile FileDBType
+	var dbFile iface.File
 	if err := scan.Row(&dbFile, rows); err != nil {
 		return nil, err
 	}
