@@ -15,7 +15,7 @@ type DBHandler struct {
 //go:embed migrations/newdb.sql
 var createDBQuery string
 
-func OpenLiteDB(dbpath string) (*sql.DB, error) {
+func OpenLiteDB(dbpath string) (*DBHandler, error) {
 	sqliteFmt := fmt.Sprintf("%s", dbpath)
 
 	db, err := sql.Open("sqlite3", sqliteFmt)
@@ -23,7 +23,7 @@ func OpenLiteDB(dbpath string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	return db, nil
+	return &DBHandler{db}, nil
 }
 
 func (db *DBHandler) Query(query string, args ...any) (*sql.Rows, error) {

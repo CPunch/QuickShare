@@ -1,6 +1,8 @@
 package iface
 
-import "time"
+import (
+	"time"
+)
 
 type File struct {
 	ID         string    `json:"id"`
