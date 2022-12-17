@@ -16,7 +16,7 @@ type Service struct {
 }
 
 func NewService(ctx context.Context) *Service {
-	service := &Service{ctx: ctx}
+	service := &Service{ctx: ctx, mux: chi.NewMux()}
 
 	service.mux.Post(config.UPLOAD_ENPOINT, service.uploadEndpointHandler())
 	service.mux.Get("/raw/{id}", service.rawEndpointHandler())
