@@ -13,7 +13,7 @@ func main() {
 	subcommands.Register(subcommands.HelpCommand(), "")
 	subcommands.Register(subcommands.FlagsCommand(), "")
 	subcommands.Register(subcommands.CommandsCommand(), "")
-	subcommands.Register(&serviceCommand{}, "")
+	subcommands.Register(&hostCommand{}, "")
 
 	conf := flag.String("config", "config.ini", "configuration file")
 

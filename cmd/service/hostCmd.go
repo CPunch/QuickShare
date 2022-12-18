@@ -10,27 +10,27 @@ import (
 	"github.com/CPunch/QuickShare/service"
 )
 
-type serviceCommand struct {
+type hostCommand struct {
 	port int
 }
 
-func (s *serviceCommand) Name() string {
-	return "service"
+func (s *hostCommand) Name() string {
+	return "host"
 }
 
-func (s *serviceCommand) Synopsis() string {
+func (s *hostCommand) Synopsis() string {
 	return "Starts web service"
 }
 
-func (s *serviceCommand) Usage() string {
+func (s *hostCommand) Usage() string {
 	return s.Name() + " - " + s.Synopsis() + ":\n"
 }
 
-func (s *serviceCommand) SetFlags(f *flag.FlagSet) {
+func (s *hostCommand) SetFlags(f *flag.FlagSet) {
 	f.IntVar(&s.port, "port", 8080, "Hosts the web service on this port.")
 }
 
-func (s *serviceCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
+func (s *hostCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
 	server := service.NewService(ctx)
 	if err := server.Serve("127.0.0.1", s.port); err != nil {
 		log.Print(err)
