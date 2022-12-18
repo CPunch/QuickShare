@@ -14,6 +14,7 @@ func main() {
 	subcommands.Register(subcommands.FlagsCommand(), "")
 	subcommands.Register(subcommands.CommandsCommand(), "")
 	subcommands.Register(&hostCommand{}, "")
+	subcommands.Register(&tokenCommand{}, "")
 
 	conf := flag.String("config", "config.ini", "configuration file")
 
