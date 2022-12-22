@@ -10,6 +10,7 @@ import (
 )
 
 const CONFIG_FILE = "config.ini"
+const CONTEXT_CONFIG = "configFile"
 
 // tries to setup the config file location & return the absolute config
 // filepath, failures are ignored and a relative path is returned.
@@ -24,7 +25,12 @@ func getConfigPath() string {
 
 	// make sure directory exists
 	configDir := filepath.Join(homeDir, ".config", "quickshare")
-	if err := os.MkdirAll(configDir, 0660); err != nil {
+	if err := os.MkdirAll(configDir, 0750); err != nil {
+		// ignore error, environment is weird
+		return CONFIG_FILE
+	}
+
+	if err := os.Chmod(configDir, 0750); err != nil {
 		// ignore error, environment is weird
 		return CONFIG_FILE
 	}
@@ -41,9 +47,7 @@ func main() {
 
 	conf := flag.String("config", getConfigPath(), "configuration file")
 
-	// TODO: the config file won't exist for the setup command. Should the
-	// config argument just be passed to the commands as a context value?
-	// That way, each command can choose to load the config or not?
-	ctx := LoadConfig(context.Background(), *conf)
+	flag.Parse()
+	ctx := context.WithValue(context.Background(), CONTEXT_CONFIG, *conf)
 	os.Exit(int(subcommands.Execute(ctx)))
 }

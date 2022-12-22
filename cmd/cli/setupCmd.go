@@ -3,8 +3,12 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
+	"log"
+	"os"
 
 	"github.com/google/subcommands"
+	"gopkg.in/ini.v1"
 )
 
 type setupCommand struct {
@@ -40,5 +44,30 @@ func (s *setupCommand) SetFlags(f *flag.FlagSet) {
 }
 
 func (s *setupCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
+	conf := ctx.Value(CONTEXT_CONFIG).(string)
+
+	if s.baseUrl == "https://share.example.com" || s.token == "my-example-token" {
+		fmt.Println("baseUrl and token must be set!")
+		return subcommands.ExitUsageError
+	}
+
+	// grab config file
+	file, err := os.OpenFile(conf, os.O_CREATE|os.O_RDWR, 0750)
+	if err != nil {
+		fmt.Println(err)
+		return subcommands.ExitFailure
+	}
+	defer file.Close()
+
+	// craft & write ini
+	configIni := ini.Empty()
+	configIni.Section("").NewKey(CONFIG_BASEURL, s.baseUrl)
+	configIni.Section("").NewKey(CONFIG_TOKEN, s.token)
+	if _, err = configIni.WriteTo(file); err != nil {
+		fmt.Println(err)
+		return subcommands.ExitFailure
+	}
+
+	log.Printf("setup info written to %s!\n", conf)
 	return subcommands.ExitSuccess
 }
