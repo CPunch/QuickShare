@@ -30,6 +30,8 @@ func getConfigPath() string {
 		return CONFIG_FILE
 	}
 
+	// some UNIX-like OSes have a default umask value that doesn't allow mkdir to create directories with permission 750.
+	// so we still need to explicitly set the perms using chmod
 	if err := os.Chmod(configDir, 0750); err != nil {
 		// ignore error, environment is weird
 		return CONFIG_FILE
@@ -44,6 +46,7 @@ func main() {
 	subcommands.Register(subcommands.FlagsCommand(), "")
 	subcommands.Register(subcommands.CommandsCommand(), "")
 	subcommands.Register(&setupCommand{}, "")
+	subcommands.Register(&shareCommand{}, "")
 
 	conf := flag.String("config", getConfigPath(), "configuration file")
 
