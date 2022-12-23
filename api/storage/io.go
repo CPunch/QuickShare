@@ -83,14 +83,14 @@ func (storage *StorageIOHandler) SendFile(hash string, w http.ResponseWriter) er
 
 	// send the file in chunks of BUF_SIZE
 	for {
-		_, err := file.Read(buf)
+		sz, err := file.Read(buf)
 		if err == io.EOF {
 			break
 		} else if err != nil {
 			return err
 		}
 
-		_, err = w.Write(buf)
+		_, err = w.Write(buf[:sz])
 		if err != nil {
 			return err
 		}

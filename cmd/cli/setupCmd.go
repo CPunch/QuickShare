@@ -4,7 +4,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/google/subcommands"
@@ -68,6 +67,6 @@ func (s *setupCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interf
 		return subcommands.ExitFailure
 	}
 
-	log.Printf("setup info written to %s!\n", conf)
+	fmt.Printf("setup info written to %s!\n", conf)
 	return subcommands.ExitSuccess
 }
