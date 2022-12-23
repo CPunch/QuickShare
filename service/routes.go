@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -90,6 +91,7 @@ func (server *Service) rawEndpointHandler() http.HandlerFunc {
 			return
 		}
 
+		w.Header().Set("Content-Disposition", fmt.Sprintf(": attachment; filename=\"%s\"", file.Name))
 		if err = storage.SendFile(file.Sha256, w); err != nil {
 			http.Error(w, "Unexpected error occurred, please try again!", http.StatusInternalServerError)
 			log.Fatal("[service/rawEndpointHandler]: Failed sending file! ", err)

@@ -2,6 +2,7 @@ package storage
 
 import (
 	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -17,8 +18,19 @@ type StorageIOHandler struct {
 	root string
 }
 
+// TODO: add an error result ? maybe ?
 func NewStorageIO(root string) StorageHandler {
-	return &StorageIOHandler{root: root} // TODO: create directory if it doesn't exist
+	if err := os.MkdirAll(root, 0750); err != nil {
+		log.Fatal("[api/storage/NewStorageIO]:", err)
+	}
+
+	// some UNIX-like OSes have a default umask value that doesn't allow mkdir to create directories with permission 750.
+	// so we still need to explicitly set the perms using chmod
+	if err := os.Chmod(root, 0750); err != nil {
+		log.Fatal("[api/storage/NewStorageIO]:", err)
+	}
+
+	return &StorageIOHandler{root: root}
 }
 
 // Accepts the file and stores it. Does NOT insert the file into the db.
