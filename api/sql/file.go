@@ -2,6 +2,7 @@ package sql
 
 import (
 	_ "encoding/json"
+	"time"
 
 	"github.com/CPunch/QuickShare/api/iface"
 	"github.com/blockloop/scan"
@@ -59,9 +60,8 @@ func (db *DBHandler) GetFilesByToken(token string) (*[]iface.File, error) {
 	return &files, nil
 }
 
-func (db *DBHandler) InsertFile(token, name, hash, mime string) (*iface.File, error) {
-	// TODO: ID should be a slug, short and human readable
-	rows, _ := db.Query("INSERT INTO files(ID, TokenID, Name, Sha256, Mime) VALUES(?, ?, ?, ?, ?) RETURNING *", uuid.New().String(), token, name, hash, mime)
+func (db *DBHandler) InsertFile(token, name, hash, mime string, expire time.Duration) (*iface.File, error) {
+	rows, _ := db.Query("INSERT INTO files(ID, TokenID, Name, Sha256, Mime, Expire) VALUES(?, ?, ?, ?, ?) RETURNING *", uuid.New().String(), token, name, hash, mime, time.Now().Add(expire))
 
 	var dbFile iface.File
 	if err := scan.Row(&dbFile, rows); err != nil {

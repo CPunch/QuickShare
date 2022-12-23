@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/CPunch/QuickShare/api/sql"
 	"github.com/CPunch/QuickShare/api/storage"
@@ -38,6 +39,13 @@ func (server *Service) uploadEndpointHandler() http.HandlerFunc {
 			return
 		}
 
+		expire := r.FormValue("expire")
+		expireTime, err := time.ParseDuration(expire)
+		if err != nil {
+			http.Error(w, "Failed to parse time duration!", http.StatusBadRequest)
+			return
+		}
+
 		file, header, err := r.FormFile("file")
 		if err != nil {
 			http.Error(w, "Failed to get file from request!", http.StatusBadRequest)
@@ -52,7 +60,7 @@ func (server *Service) uploadEndpointHandler() http.HandlerFunc {
 			log.Fatal("[service/uploadEndpointHandler]: StorageHandler error ", err)
 		}
 
-		storedFile, err = db.InsertFile(token, storedFile.Name, storedFile.Sha256, storedFile.Mime)
+		storedFile, err = db.InsertFile(token, storedFile.Name, storedFile.Sha256, storedFile.Mime, expireTime)
 		if err != nil {
 			http.Error(w, "Failed to insert file into the database!", http.StatusInternalServerError)
 			log.Fatal("[service/uploadEndpointHandler]: SQL Error ", err)
