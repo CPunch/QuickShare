@@ -29,7 +29,6 @@ func (client *WebClient) PostFile(reader io.Reader, filename string) (*iface.Fil
 	httpClient := &http.Client{}
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
-	defer writer.Close()
 
 	// write token
 	tknw, err := writer.CreateFormField("token")
@@ -50,9 +49,10 @@ func (client *WebClient) PostFile(reader io.Reader, filename string) (*iface.Fil
 	if _, err := io.Copy(fw, reader); err != nil {
 		return nil, err
 	}
+	writer.Close()
 
 	// send request
-	req, err := http.NewRequest("POST", client.baseUrl+config.UPLOAD_ENPOINT, bytes.NewReader(body.Bytes()))
+	req, err := http.NewRequest("POST", client.baseUrl+config.UPLOAD_ENPOINT, body)
 	if err != nil {
 		return nil, err
 	}
