@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/CPunch/QuickShare/api/web"
 	"github.com/google/subcommands"
 )
 
 type shareCommand struct {
+	expire time.Duration
 }
 
 func (s *shareCommand) Name() string {
@@ -23,10 +25,16 @@ func (s *shareCommand) Synopsis() string {
 }
 
 func (s *shareCommand) Usage() string {
-	return s.Name() + " <files to upload> - " + s.Synopsis() + ":\n"
+	return s.Name() + " <files to upload...> - " + s.Synopsis() + ":\n"
 }
 
 func (s *shareCommand) SetFlags(f *flag.FlagSet) {
+	f.DurationVar(
+		&s.expire,
+		"expire",
+		0,
+		"delta time to keep the file available. a zero duration represents 'forever'.",
+	)
 }
 
 func (s *shareCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
@@ -50,7 +58,7 @@ func (s *shareCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interf
 		}
 		defer file.Close()
 
-		sharedFile, err := client.PostFile(file, filepath.Base(fpath))
+		sharedFile, err := client.PostFile(file, filepath.Base(fpath), s.expire)
 		if err != nil {
 			fmt.Println("Failed to upload", fpath, "--", err)
 			return subcommands.ExitFailure

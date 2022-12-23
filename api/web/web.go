@@ -8,6 +8,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/CPunch/QuickShare/api/iface"
 	"github.com/CPunch/QuickShare/config"
@@ -25,7 +26,7 @@ func NewClient(baseUrl, token string) *WebClient {
 	}
 }
 
-func (client *WebClient) PostFile(reader io.Reader, filename string) (*iface.File, error) {
+func (client *WebClient) PostFile(reader io.Reader, filename string, expire time.Duration) (*iface.File, error) {
 	httpClient := &http.Client{}
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
@@ -37,6 +38,16 @@ func (client *WebClient) PostFile(reader io.Reader, filename string) (*iface.Fil
 	}
 
 	if _, err := io.Copy(tknw, strings.NewReader(client.token)); err != nil {
+		return nil, err
+	}
+
+	// write expire time
+	timew, err := writer.CreateFormField("expire")
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := io.Copy(timew, strings.NewReader(expire.String())); err != nil {
 		return nil, err
 	}
 
