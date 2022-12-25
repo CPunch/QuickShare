@@ -5,7 +5,6 @@ import (
 	"flag"
 	"os"
 
-	"github.com/CPunch/QuickShare/config/load"
 	"github.com/google/subcommands"
 )
 
@@ -19,6 +18,6 @@ func main() {
 	conf := flag.String("config", "config.ini", "configuration file")
 
 	flag.Parse()
-	ctx := load.LoadConfig(context.Background(), *conf)
+	ctx := LoadConfig(context.Background(), *conf)
 	os.Exit(int(subcommands.Execute(ctx)))
 }
