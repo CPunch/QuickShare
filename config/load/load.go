@@ -2,7 +2,11 @@ package load
 
 import (
 	"context"
+	_ "embed"
+	"io"
 	"log"
+	"os"
+	"strings"
 
 	"github.com/CPunch/QuickShare/api/sql"
 	"github.com/CPunch/QuickShare/api/storage"
@@ -10,7 +14,23 @@ import (
 	"gopkg.in/ini.v1"
 )
 
+//go:embed config.ini
+var defaultConfig string
+
 func LoadConfig(ctx context.Context, configFile string) context.Context {
+	// create default config (if not exist!!)
+	if _, err := os.Stat(configFile); os.IsNotExist(err) {
+		file, err := os.OpenFile(configFile, os.O_CREATE|os.O_RDWR, 0650)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// write default config to disk
+		io.Copy(file, strings.NewReader(defaultConfig))
+		file.Close()
+	}
+
+	// now load the config
 	cfg, err := ini.Load(configFile)
 	if err != nil {
 		log.Fatal(err)
