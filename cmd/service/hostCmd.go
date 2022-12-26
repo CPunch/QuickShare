@@ -32,7 +32,7 @@ func (s *hostCommand) SetFlags(f *flag.FlagSet) {
 
 func (s *hostCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
 	server := service.NewService(ctx)
-	if err := server.Serve("127.0.0.1", s.port); err != nil {
+	if err := server.Serve("0.0.0.0", s.port); err != nil {
 		log.Print(err)
 		return subcommands.ExitFailure
 	}
