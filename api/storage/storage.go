@@ -21,22 +21,12 @@ type StorageHandler interface {
 	SendFile(hash string, w http.ResponseWriter) error
 }
 
-const BUF_SIZE int = 1028
-
 func hashFile(file io.Reader) (string, error) {
 	h := sha256.New()
-	buf := make([]byte, BUF_SIZE)
 
 	// hash file
-	for {
-		sz, err := file.Read(buf)
-		if err == io.EOF {
-			break
-		} else if err != nil {
-			return "", err
-		}
-
-		h.Write(buf[0:sz])
+	if _, err := io.Copy(h, file); err != nil {
+		return "", err
 	}
 
 	return fmt.Sprintf("%x", h.Sum(nil)), nil
