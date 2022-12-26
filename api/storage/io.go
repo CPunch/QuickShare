@@ -20,13 +20,13 @@ type StorageIOHandler struct {
 
 // TODO: add an error result ? maybe ?
 func NewStorageIO(root string) StorageHandler {
-	if err := os.MkdirAll(root, 0750); err != nil {
+	if err := os.MkdirAll(root, 0666); err != nil {
 		log.Fatal("[api/storage/NewStorageIO]:", err)
 	}
 
 	// some UNIX-like OSes have a default umask value that doesn't allow mkdir to create directories with permission 750.
 	// so we still need to explicitly set the perms using chmod
-	if err := os.Chmod(root, 0750); err != nil {
+	if err := os.Chmod(root, 0666); err != nil {
 		log.Fatal("[api/storage/NewStorageIO]:", err)
 	}
 
@@ -76,24 +76,11 @@ func (storage *StorageIOHandler) SendFile(hash string, w http.ResponseWriter) er
 	if err != nil {
 		return err
 	}
+	defer file.Close()
 
-	buf := make([]byte, BUF_SIZE)
-
-	// TODO: write the mime Content-Type header, maybe accept a *sql.FileFBType instead of just the hash?
-
-	// send the file in chunks of BUF_SIZE
-	for {
-		sz, err := file.Read(buf)
-		if err == io.EOF {
-			break
-		} else if err != nil {
-			return err
-		}
-
-		_, err = w.Write(buf[:sz])
-		if err != nil {
-			return err
-		}
+	// TODO: write the mime Content-Type header, maybe accept a *iface.File instead of just the hash?
+	if _, err := io.Copy(w, file); err != nil {
+		return nil
 	}
 
 	return nil
