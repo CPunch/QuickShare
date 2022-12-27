@@ -1,8 +1,12 @@
+import Upload from './components/Upload';
 
-function App() {
-  return (
-    <></>
-  )
+const App = () => {
+    return (
+        <>
+            <Upload />
+        </>
+    )
+
 }
 
 export default App
