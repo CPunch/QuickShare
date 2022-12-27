@@ -75,7 +75,13 @@ func (client *WebClient) PostFile(reader io.Reader, filename string, expire time
 	}
 
 	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("Server responded with status code %d!", res.StatusCode)
+		// service responds with a detailed message (usually)
+		resBody, err := io.ReadAll(res.Body)
+		if err != nil {
+			return nil, fmt.Errorf("Service responded with status code %d!", res.StatusCode)
+		}
+
+		return nil, fmt.Errorf("Service responded with %s!", string(resBody))
 	}
 
 	// read response
