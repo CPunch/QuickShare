@@ -1,8 +1,10 @@
 package service
 
 import (
+	"embed"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"log"
 	"net/http"
 	"time"
@@ -12,6 +14,19 @@ import (
 	"github.com/CPunch/QuickShare/config"
 	"github.com/go-chi/chi/v5"
 )
+
+//go:embed app/dist
+var clientFS embed.FS
+
+func (server *Service) staticClientHandler() http.Handler {
+	// "/index.html" now becomes "/app/dist/index.html"
+	app, err := fs.Sub(clientFS, "app/dist")
+	if err != nil {
+		log.Println(err)
+	}
+
+	return http.FileServer(http.FS(app))
+}
 
 func (server *Service) uploadEndpointHandler() http.HandlerFunc {
 	storage := server.ctx.Value(config.CONTEXT_STORAGE).(storage.StorageHandler)
