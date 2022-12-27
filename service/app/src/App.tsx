@@ -14,13 +14,13 @@ const darkTheme = createTheme({
 const TOKEN_STORAGE = 'tkn'
 
 const App = () => {
-    const loadToken = () => {
+    // load token from localStorage (if it exists!)
+    const [tokenInput, setTokenInput] = React.useState(() => {
         let tkn = localStorage.getItem(TOKEN_STORAGE)
         return tkn === null ? "" : tkn
-    }
+    });
 
-    const [tokenInput, setTokenInput] = React.useState(loadToken);
-
+    // update token in localStorage and (TODO!) test token validity
     const onSubmit = (event: React.MouseEvent<HTMLSpanElement>) => {
         console.log(event)
         localStorage.setItem(TOKEN_STORAGE, tokenInput)
