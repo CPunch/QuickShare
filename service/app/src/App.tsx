@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, Container, Grid } from '@mui/material';
+import { Card, CardContent, Grid } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Upload from './components/Upload';
@@ -11,11 +11,19 @@ const darkTheme = createTheme({
     },
 });
 
+const TOKEN_STORAGE = 'tkn'
+
 const App = () => {
-    const [tokenInput, setTokenInput] = React.useState("");
+    const loadToken = () => {
+        let tkn = localStorage.getItem(TOKEN_STORAGE)
+        return tkn === null ? "" : tkn
+    }
+
+    const [tokenInput, setTokenInput] = React.useState(loadToken);
 
     const onSubmit = (event: React.MouseEvent<HTMLSpanElement>) => {
         console.log(event)
+        localStorage.setItem(TOKEN_STORAGE, tokenInput)
     }
 
     return (
