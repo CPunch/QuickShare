@@ -20,7 +20,6 @@ const Upload = () => {
                     onChange={selectFile}  
                 />
                 <Button
-                    className="btn-choose"
                     variant="outlined"
                     component="span" >
                     Choose Files
