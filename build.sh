@@ -5,6 +5,13 @@ OUTDIR=build
 # make sure directory actually exists
 mkdir -p $OUTDIR
 
+# build frontend
+echo "Building frontend...."
+cd service/app/
+npm i
+npm run build
+cd ../../
+
 echo "Building service...."
 cd cmd/service/
 go build -o ../../$OUTDIR/service
