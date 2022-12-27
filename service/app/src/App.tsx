@@ -30,7 +30,18 @@ const App = () => {
                 style={{ minHeight: '100vh' }}
             >
                 <Grid item xs={12} sx={{ width: "100%", display: 'flex', justifyContent: 'center'}}>
-                    <TokenPrompt tokenInput={tokenInput} setTokenInput={setTokenInput} onClick={onSubmit}/>
+                    <Card
+                        sx={{
+                            borderRadius: 2,
+                            margin: 2,
+                            maxWidth: 500,
+                            width: "100%",
+                        }}
+                        >
+                        <CardContent sx={{ display: 'flex', justifyContent: 'center' }}>
+                            <TokenPrompt tokenInput={tokenInput} setTokenInput={setTokenInput} onClick={onSubmit}/>
+                        </CardContent>
+                    </Card>
                 </Grid>
             </Grid> 
         </ThemeProvider>
