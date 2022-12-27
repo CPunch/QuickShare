@@ -9,3 +9,7 @@ $ service host
 $ service token --new
 ```
 > generates a new token
+
+TODOs:
+- make web portal
+- finish file expiration (implemented in routes, cli & db, just need watchdog/cronjob service)
