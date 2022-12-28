@@ -11,7 +11,7 @@ const darkTheme = createTheme({
     },
 });
 
-const TOKEN_STORAGE = 'tkn'
+const TOKEN_STORAGE = 'tkn';
 
 const App = () => {
     // load token from localStorage (if it exists!)
@@ -24,7 +24,7 @@ const App = () => {
     const onSubmit = (event: React.MouseEvent<HTMLSpanElement>) => {
         console.log(event)
         localStorage.setItem(TOKEN_STORAGE, tokenInput)
-    }
+    };
 
     return (
         <ThemeProvider theme={darkTheme}>

@@ -35,7 +35,7 @@ const TokenPrompt = ({tokenInput, setTokenInput, onClick}: TokenProps) => {
                 </Box>
             </Grid>
         </Grid>
-    )
+    );
 }
 
 export default TokenPrompt

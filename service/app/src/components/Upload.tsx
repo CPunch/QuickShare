@@ -2,12 +2,12 @@ import { Card, CardContent, Box, Button } from "@mui/material";
 import React from 'react';
 
 const Upload = () => {
-    const [uploading, setUploading] = React.useState(false)
+    const [uploading, setUploading] = React.useState(false);
 
     const selectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUploading(true)
         // TODO: implement logic lol
-    }
+    };
 
     return (
         <Box>
