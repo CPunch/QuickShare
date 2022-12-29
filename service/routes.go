@@ -22,7 +22,7 @@ func (server *Service) staticClientHandler() http.Handler {
 	// "/index.html" now becomes "/app/dist/index.html"
 	app, err := fs.Sub(clientFS, "app/dist")
 	if err != nil {
-		log.Println(err)
+		log.Fatal(err)
 	}
 
 	return http.FileServer(http.FS(app))
@@ -49,7 +49,6 @@ func (server *Service) uploadEndpointHandler() http.HandlerFunc {
 		// grab form data
 		token := r.FormValue("token")
 		if tkn, err := db.GetTokenById(token); err != nil || tkn == nil {
-			log.Println(token)
 			http.Error(w, "Unauthorized token!", http.StatusUnauthorized)
 			return
 		}
@@ -119,5 +118,34 @@ func (server *Service) rawEndpointHandler() http.HandlerFunc {
 			http.Error(w, "Unexpected error occurred, please try again!", http.StatusInternalServerError)
 			log.Fatal("[service/rawEndpointHandler]: Failed sending file! ", err)
 		}
+	}
+}
+
+func (server *Service) verifyTokenEndpointHandler() http.HandlerFunc {
+	storage := server.ctx.Value(config.CONTEXT_STORAGE).(storage.StorageHandler)
+	if storage == nil {
+		log.Fatal("[service/uploadEndpointHandler]: no storage instance attached to context!")
+	}
+
+	db := server.ctx.Value(config.CONTEXT_DB).(*sql.DBHandler)
+	if db == nil {
+		log.Fatal("[service/uploadEndpointHandler]: no db instance attached to context!")
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := r.ParseMultipartForm(5 * 1024 * 1024) // keep up to 5mb of the file in memory, dump the rest to disk
+		if err != nil {
+			http.Error(w, "Failed to parse MultipartForm!", http.StatusBadRequest)
+			return
+		}
+
+		// grab form data
+		token := r.FormValue("token")
+		if tkn, err := db.GetTokenById(token); err != nil || tkn == nil {
+			http.Error(w, "Unauthorized token!", http.StatusUnauthorized)
+			return
+		}
+
+		w.Write([]byte{'O', 'K'})
 	}
 }

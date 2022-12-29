@@ -20,7 +20,8 @@ func NewService(ctx context.Context) *Service {
 
 	service.mux.Handle("/*", service.staticClientHandler())
 
-	service.mux.Post(config.UPLOAD_ENPOINT, service.uploadEndpointHandler())
+	service.mux.Post(config.UPLOAD_ENDPOINT, service.uploadEndpointHandler())
+	service.mux.Post(config.TOKEN_ENDPOINT, service.verifyTokenEndpointHandler())
 	service.mux.Get("/raw/{id}", service.rawEndpointHandler())
 	return service
 }

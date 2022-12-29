@@ -11,7 +11,7 @@ export interface TokenProps {
 
 const TOKEN_STORAGE = 'tkn';
 
-const TokenPrompt = ({onToken}: TokenProps) => {
+const TokenPrompt = ({ onToken }: TokenProps) => {
     const [popover, setPopover] = React.useState<null | string>(null);
     const inputRef = React.useRef<HTMLDivElement>(null);
 
@@ -53,7 +53,7 @@ const TokenPrompt = ({onToken}: TokenProps) => {
                             horizontal: 'left',
                         }}
                         transformOrigin={{
-                            vertical: 'top',
+                            vertical: 'bottom',
                             horizontal: 'right',
                         }}
                     ><Typography sx={{ p: 2}}>{popover}</Typography></Popover>
@@ -72,6 +72,7 @@ const TokenPrompt = ({onToken}: TokenProps) => {
                 <Box>
                     <Button
                         variant="outlined"
+                        color={popover === null ? 'primary' : 'error'}
                         onClick={onSubmit} >
                         <KeyboardReturnIcon />
                     </Button>

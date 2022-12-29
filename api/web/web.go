@@ -63,7 +63,7 @@ func (client *WebClient) PostFile(reader io.Reader, filename string, expire time
 	writer.Close()
 
 	// send request
-	req, err := http.NewRequest("POST", client.baseUrl+config.UPLOAD_ENPOINT, body)
+	req, err := http.NewRequest("POST", client.baseUrl+config.UPLOAD_ENDPOINT, body)
 	if err != nil {
 		return nil, err
 	}
