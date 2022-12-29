@@ -141,11 +141,13 @@ func (server *Service) verifyTokenEndpointHandler() http.HandlerFunc {
 
 		// grab form data
 		token := r.FormValue("token")
-		if tkn, err := db.GetTokenById(token); err != nil || tkn == nil {
+		tkn, err := db.GetTokenById(token)
+		if err != nil || tkn == nil {
 			http.Error(w, "Unauthorized token!", http.StatusUnauthorized)
 			return
 		}
 
-		w.Write([]byte{'O', 'K'})
+		// respond with token info
+		json.NewEncoder(w).Encode(token)
 	}
 }
