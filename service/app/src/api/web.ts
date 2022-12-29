@@ -1,4 +1,4 @@
-export const verifyToken = async (token: string): Promise<boolean> => {
+const VerifyToken = async (token: string): Promise<boolean> => {
     // create request data
     let form = new FormData();
     form.append("token", token);
@@ -8,7 +8,9 @@ export const verifyToken = async (token: string): Promise<boolean> => {
         body: form,
     };
 
-    return fetch("/api/token").then((response) => {
+    return fetch("/api/token", options).then((response) => {
         return response.status == 200
     });
 }
+
+export default VerifyToken

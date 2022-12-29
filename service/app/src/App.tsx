@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, Grid } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+
 import Upload from './components/Upload';
 import TokenPrompt from './components/TokenPrompt';
 
@@ -11,20 +12,11 @@ const darkTheme = createTheme({
     },
 });
 
-const TOKEN_STORAGE = 'tkn';
 
 const App = () => {
-    // load token from localStorage (if it exists!)
-    const [tokenInput, setTokenInput] = React.useState(() => {
-        let tkn = localStorage.getItem(TOKEN_STORAGE)
-        return tkn === null ? "" : tkn
-    });
-
-    // update token in localStorage and (TODO!) test token validity
-    const onSubmit = (event: React.MouseEvent<HTMLSpanElement>) => {
-        console.log(event)
-        localStorage.setItem(TOKEN_STORAGE, tokenInput)
-    };
+    const onToken = (token: string) => {
+        // TODO: token is validated, open upload page
+    }
 
     return (
         <ThemeProvider theme={darkTheme}>
@@ -51,7 +43,7 @@ const App = () => {
                         }}
                         >
                         <CardContent sx={{ display: 'flex', justifyContent: 'center' }}>
-                            <TokenPrompt tokenInput={tokenInput} setTokenInput={setTokenInput} onClick={onSubmit}/>
+                            <TokenPrompt onToken={onToken}/>
                         </CardContent>
                     </Card>
                 </Grid>

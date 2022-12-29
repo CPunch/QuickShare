@@ -1,21 +1,64 @@
 import KeyIcon from '@mui/icons-material/Key';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
-import { Button, Box, TextField, Grid } from "@mui/material"
+import { Button, Box, TextField, Grid, Popover, Typography } from "@mui/material"
 import React from 'react';
 
+import VerifyToken from '../api/web';
+
 export interface TokenProps {
-    tokenInput: string;
-    setTokenInput: React.Dispatch<React.SetStateAction<string>>;
-    onClick: React.MouseEventHandler<HTMLSpanElement>
+    onToken: (token: string) => void // callback for a successful valid token submitted
 }
 
-const TokenPrompt = ({tokenInput, setTokenInput, onClick}: TokenProps) => {
+const TOKEN_STORAGE = 'tkn';
+
+const TokenPrompt = ({onToken}: TokenProps) => {
+    const [popover, setPopover] = React.useState<null | string>(null);
+    const inputRef = React.useRef<HTMLDivElement>(null);
+
+    // load token from localStorage (if it exists!)
+    const [tokenInput, setTokenInput] = React.useState(() => {
+        let tkn = localStorage.getItem(TOKEN_STORAGE)
+        return tkn === null ? "" : tkn
+    });
+
+    // update token in localStorage && call onToken() callback if token is valid
+    const onSubmit = async (event: React.MouseEvent<HTMLSpanElement>) => {
+        event.preventDefault();
+
+        const validToken = await VerifyToken(tokenInput);
+        if (validToken) {
+            setPopover(null);
+            onToken(tokenInput);
+        } else {
+            setPopover('Invalid token!');
+        }
+        localStorage.setItem(TOKEN_STORAGE, tokenInput);
+    };
+
+    const onPopoverClose = () => {
+        setPopover(null);
+    };
+
     return (
         <Grid container spacing={1} >
             <Grid item xs={10}>
                 <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
                     <KeyIcon sx={{ marginRight: 1, marginBottom: 'auto', marginTop: 'auto', weight: 'bold' }} />
-                    <TextField 
+                    <Popover
+                        anchorEl={inputRef.current}
+                        open={popover !== null}
+                        onClose={onPopoverClose}
+                        anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'left',
+                        }}
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                    ><Typography sx={{ p: 2}}>{popover}</Typography></Popover>
+                    <TextField
+                        ref={inputRef}
                         variant="standard"
                         value={tokenInput}
                         onChange={(e: any) => setTokenInput(e.target.value)}
@@ -29,7 +72,7 @@ const TokenPrompt = ({tokenInput, setTokenInput, onClick}: TokenProps) => {
                 <Box>
                     <Button
                         variant="outlined"
-                        onClick={onClick} >
+                        onClick={onSubmit} >
                         <KeyboardReturnIcon />
                     </Button>
                 </Box>
