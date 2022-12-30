@@ -61,7 +61,15 @@ func (db *DBHandler) GetFilesByToken(token string) (*[]iface.File, error) {
 }
 
 func (db *DBHandler) InsertFile(token, name, hash, mime string, expire time.Duration) (*iface.File, error) {
-	rows, err := db.Query("INSERT INTO files(ID, TokenID, Name, Sha256, Mime, Expire) VALUES(?, ?, ?, ?, ?, ?) RETURNING *", uuid.New().String(), token, name, hash, mime, time.Now().Add(expire))
+	rows, err := db.Query(
+		"INSERT INTO files(ID, TokenID, Name, Sha256, Mime, Expire) VALUES(?, ?, ?, ?, ?, ?) RETURNING *",
+		uuid.New().String(),
+		token,
+		name,
+		hash,
+		mime,
+		time.Now().Add(expire),
+	)
 	if err != nil {
 		return nil, err
 	}
