@@ -13,12 +13,12 @@ cd ../../
 
 echo "Building service...."
 cd cmd/service/
-CGO_ENABLED=0 go build -a -tags netgo -ldflags '-w' -o ../../$OUTDIR/service
+go build -tags netgo -ldflags '-w' -o ../../$OUTDIR/service
 cd ../../
 echo "Built $OUTDIR/service"
 
 echo "Building cli...."
 cd cmd/cli/
-CGO_ENABLED=0 go build -a -tags netgo -ldflags '-w' -o ../../$OUTDIR/cli
+go build -tags netgo -ldflags '-w' -o ../../$OUTDIR/cli
 cd ../../
 echo "Built $OUTDIR/cli"

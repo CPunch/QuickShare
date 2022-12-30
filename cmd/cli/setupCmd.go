@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/CPunch/QuickShare/api/web"
 	"github.com/google/subcommands"
 	"gopkg.in/ini.v1"
 )
@@ -58,6 +59,16 @@ func (s *setupCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interf
 	}
 	defer file.Close()
 
+	fmt.Print("Testing link... ")
+	client := web.NewClient(s.baseUrl, s.token)
+
+	if _, err := client.VerifyToken(); err != nil {
+		fmt.Println("Failed")
+		fmt.Println(err)
+		return subcommands.ExitFailure
+	}
+	fmt.Println("Success")
+
 	// craft & write ini
 	configIni := ini.Empty()
 	configIni.Section("").NewKey(CONFIG_BASEURL, s.baseUrl)
@@ -67,6 +78,6 @@ func (s *setupCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interf
 		return subcommands.ExitFailure
 	}
 
-	fmt.Printf("setup info written to %s!\n", conf)
+	fmt.Printf("Setup info written to %s!\n", conf)
 	return subcommands.ExitSuccess
 }

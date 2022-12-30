@@ -83,6 +83,7 @@ func (server *Service) uploadEndpointHandler() http.HandlerFunc {
 		log.Printf("New file uploaded! file hash: %s id: %s mime: %s\n", storedFile.Sha256, storedFile.ID, storedFile.Mime)
 
 		// respond with new file info
+		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(storedFile)
 	}
 }
@@ -148,6 +149,7 @@ func (server *Service) verifyTokenEndpointHandler() http.HandlerFunc {
 		}
 
 		// respond with token info
-		json.NewEncoder(w).Encode(token)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(tkn)
 	}
 }
