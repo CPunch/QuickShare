@@ -2,8 +2,10 @@ import { Card, CardContent, Box, Button } from "@mui/material";
 import React from 'react';
 import Dropzone from "react-dropzone";
 
+import { UploadFile } from '../api/web';
+
 const readFile = (file: File) => {
-    return new Promise((resolve, reject) => {
+    return new Promise<ArrayBuffer | null>((resolve, reject) => {
         const reader = new FileReader()
 
         // read file and dispatch promise
@@ -15,10 +17,14 @@ const readFile = (file: File) => {
         }
         reader.readAsArrayBuffer(file)
     })
-}
+};
 
-const Upload = () => {
-    const [uploading, setUploading] = React.useState(false);
+export interface UploadProps {
+    token: string,
+};
+
+const Upload = ({ token }: UploadProps) => {
+    const [fileList, setFileList] = React.useState(); // TODO
 
     const onDropped = async (files: File[]) => {
         // grab selected file data
@@ -29,8 +35,17 @@ const Upload = () => {
         }));
 
         // honestly, should I batch these instead of doing them 1 at a time?
-        fileDataList.forEach(fileData => {
-            // TODO: upload each file
+        fileDataList.forEach(async fileData => {
+            // no data ? no bitches ?
+            if (fileData.data === null) {
+                return;
+            }
+
+            // TODO: grab expire time from a dropdown or something
+            const fileResult = await UploadFile(token, "0s", fileData.name, fileData.data)
+            if (fileResult === null) { // failed to upload !!! :sob:
+                return;
+            }
         });
     }
 

@@ -24,6 +24,7 @@ const VerifyToken = async (token: string): Promise<boolean> => {
     });
 };
 
+// TODO: add callback arg for progress?
 const UploadFile = async (token: string, expire: string, fileName: string, fileData: ArrayBuffer): Promise<FileResult | null> => {
     let fileBlob = new Blob([new Uint8Array(fileData, 0, fileData.byteLength)]);
 
