@@ -61,7 +61,6 @@ func (s *setupCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interf
 
 	fmt.Print("Testing link... ")
 	client := web.NewClient(s.baseUrl, s.token)
-
 	if _, err := client.VerifyToken(); err != nil {
 		fmt.Println("Failed")
 		fmt.Println(err)

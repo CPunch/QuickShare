@@ -3,7 +3,6 @@ import { Card, CardContent, Grid } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
-import Upload from './components/Upload';
 import TokenPrompt from './components/TokenPrompt';
 
 const darkTheme = createTheme({
@@ -11,7 +10,6 @@ const darkTheme = createTheme({
         mode: 'dark',
     },
 });
-
 
 const App = () => {
     const onToken = (token: string) => {

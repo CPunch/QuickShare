@@ -53,7 +53,7 @@ func (s *shareCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interf
 	for _, fpath := range f.Args() {
 		file, err := os.OpenFile(fpath, os.O_RDONLY, 0)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("Failed to open file: ", err)
 			return subcommands.ExitFailure
 		}
 		defer file.Close()

@@ -3,7 +3,7 @@ import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import { Button, Box, TextField, Grid, Popover, Typography } from "@mui/material"
 import React from 'react';
 
-import VerifyToken from '../api/web';
+import { VerifyToken } from '../api/web';
 
 export interface TokenProps {
     onToken: (token: string) => void // callback for a successful valid token submitted
