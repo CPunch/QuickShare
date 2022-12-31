@@ -4,6 +4,7 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 
 import TokenPrompt from './components/TokenPrompt';
+import UploadPrompt from './components/UploadPrompt';
 
 const darkTheme = createTheme({
     palette: {
@@ -11,9 +12,14 @@ const darkTheme = createTheme({
     },
 });
 
+type PageState = 'token' | 'upload';
+
 const App = () => {
+    const [page, setPage] = React.useState<PageState>('token');
+    const [token, setToken] = React.useState('');
     const onToken = (token: string) => {
-        // TODO: token is validated, open upload page
+        setPage('upload');
+        setToken(token);
     }
 
     return (
@@ -41,7 +47,7 @@ const App = () => {
                         }}
                         >
                         <CardContent sx={{ display: 'flex', justifyContent: 'center' }}>
-                            <TokenPrompt onToken={onToken}/>
+                            { page === 'upload' ? <UploadPrompt token={token} /> : <TokenPrompt onToken={onToken}/> }
                         </CardContent>
                     </Card>
                 </Grid>

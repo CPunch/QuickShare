@@ -23,7 +23,7 @@ export interface UploadProps {
     token: string,
 };
 
-const Upload = ({ token }: UploadProps) => {
+const UploadPrompt = ({ token }: UploadProps) => {
     const [fileList, setFileList] = React.useState(); // TODO
 
     const onDropped = async (files: File[]) => {
@@ -56,4 +56,4 @@ const Upload = ({ token }: UploadProps) => {
     )
 }
 
-export default Upload
+export default UploadPrompt
