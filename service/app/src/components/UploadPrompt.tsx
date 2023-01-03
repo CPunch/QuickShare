@@ -32,13 +32,12 @@ const UploadPrompt = ({ token }: UploadProps) => {
         await Promise.all(fileDataList.map(async fileData => {
             // TODO: grab expire time from a dropdown or something
             const fileResult = await UploadFile(token, "0s", fileData.name, fileData.raw, (progress) => {        
-                setFileList((state) => {
-                    const newList = state.slice();
-                    const indx = newList.findIndex(e => e.id === fileData.id);
-                    newList[indx] = {
-                        ...fileData,
-                        progress: progress
-                    };
+                setFileList(currentList => {
+                    const newList = currentList.slice();
+                    const elem = newList.find(e => e.id === fileData.id);
+                    if (elem !== undefined) {
+                        elem.progress = progress;
+                    }
                     return newList;
                 });
             });
@@ -48,13 +47,12 @@ const UploadPrompt = ({ token }: UploadProps) => {
                 return;
             }
 
-            setFileList((state) => {
-                const newList = state.slice();
-                const indx = newList.findIndex(e => e.id === fileData.id);
-                newList[indx] = {
-                    ...fileData,
-                    fileResult: fileResult,
-                };
+            setFileList(currentList => {
+                const newList = currentList.slice();
+                const elem = newList.find(e => e.id === fileData.id);
+                if (elem !== undefined) {
+                    elem.fileResult = fileResult;
+                }
                 return newList;
             });
         }));
@@ -78,7 +76,7 @@ const UploadPrompt = ({ token }: UploadProps) => {
                 fileList.map((fileData, index) => (
                     <Box sx={{ width: '100%' }} key={index}>
                         <Typography>{ fileData.name }</Typography>
-                        { fileData.fileResult === undefined ? <LinearProgress color="secondary" variant="determinate" value={ fileData.progress } /> : <a href={ "/raw/" + fileData.fileResult.id }></a> }
+                        { fileData.fileResult === undefined ? <LinearProgress color="secondary" variant="determinate" value={ fileData.progress } /> : <a href={ "/raw/" + fileData.fileResult.id }>Raw URL</a> }
                     </Box>
                 ))
             }
