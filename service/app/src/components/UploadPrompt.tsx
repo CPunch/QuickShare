@@ -24,13 +24,12 @@ const UploadPrompt = ({ token }: UploadProps) => {
 
     const onDropped = async (files: File[]) => {
         // grab selected file data
-        let fileDataList: FileEntry[] = await Promise.all(files.map(async file => {
-            const name = file.name;
-            return { name, progress: 0, raw: file , id: UID++};
-        }));
+        let fileDataList: FileEntry[] = files.map(file => {
+            return { name: file.name, progress: 0, raw: file , id: UID++};
+        });
         setFileList(fileList.concat(fileDataList));
 
-        fileDataList.forEach(async (fileData) => {
+        await Promise.all(fileDataList.map(async fileData => {
             // TODO: grab expire time from a dropdown or something
             const fileResult = await UploadFile(token, "0s", fileData.name, fileData.raw, (progress) => {        
                 setFileList((state) => {
@@ -58,7 +57,7 @@ const UploadPrompt = ({ token }: UploadProps) => {
                 };
                 return newList;
             });
-        });
+        }));
     }
 
     return (

@@ -26,28 +26,13 @@ const VerifyToken = async (token: string): Promise<boolean> => {
     });
 };
 
-// TODO: add callback arg for progress?
+// TODO: move these parameters into a props interface?
 const UploadFile = async (token: string, expire: string, fileName: string, fileData: File, progressCallback: (progress: number) => void): Promise<FileResult | null> => {
     // create request data
     let form = new FormData();
     form.append("token", token);
     form.append("expire", expire);
     form.append("file", fileData, fileName);
-
-    /*const options: RequestInit = {
-        method: "POST",
-        body: form,
-    };
-
-    return fetch("/api/upload", options).then(async (response) => {
-        // service rejected the request (TODO: maybe return error result?)
-        if (response.status != 200) {
-            console.error('Failed to upload' + fileName + '!', 'Result from service: ' + await response.text())
-            return null
-        }
-
-        return JSON.parse(await response.json()) as FileResult
-    });*/
 
     return axios.request({
         method: "POST",
