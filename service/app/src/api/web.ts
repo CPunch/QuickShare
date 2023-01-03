@@ -1,4 +1,6 @@
-interface FileResult {
+import axios from "axios";
+
+export interface FileResult {
     id: string,
     tokenId: string,
     hash: string,
@@ -25,16 +27,14 @@ const VerifyToken = async (token: string): Promise<boolean> => {
 };
 
 // TODO: add callback arg for progress?
-const UploadFile = async (token: string, expire: string, fileName: string, fileData: ArrayBuffer): Promise<FileResult | null> => {
-    let fileBlob = new Blob([new Uint8Array(fileData, 0, fileData.byteLength)]);
-
+const UploadFile = async (token: string, expire: string, fileName: string, fileData: File, progressCallback: (progress: number) => void): Promise<FileResult | null> => {
     // create request data
     let form = new FormData();
     form.append("token", token);
     form.append("expire", expire);
-    form.append("file", fileBlob, fileName);
+    form.append("file", fileData, fileName);
 
-    const options: RequestInit = {
+    /*const options: RequestInit = {
         method: "POST",
         body: form,
     };
@@ -47,7 +47,28 @@ const UploadFile = async (token: string, expire: string, fileName: string, fileD
         }
 
         return JSON.parse(await response.json()) as FileResult
-    });
+    });*/
+
+    return axios.request({
+        method: "POST",
+        url: "/api/upload",
+        data: form,
+        onUploadProgress: (p) => {
+            console.log(p);
+            if (p.total === undefined) {
+                return
+            }
+
+            progressCallback(Math.round((p.loaded * 100) / p.total))
+        }
+    }).then(response => {
+        if (response.status != 200) {
+            console.error('Failed to upload' + fileName + '!', 'Result from service: ' + response.data)
+            return null
+        }
+
+        return response.data as FileResult
+    })
 }
 
 export { VerifyToken, UploadFile }

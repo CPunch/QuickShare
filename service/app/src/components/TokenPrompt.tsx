@@ -24,6 +24,7 @@ const TokenPrompt = ({ onToken }: TokenProps) => {
     // update token in localStorage && call onToken() callback if token is valid
     const onSubmit = async (event: React.MouseEvent<HTMLSpanElement>) => {
         event.preventDefault();
+        localStorage.setItem(TOKEN_STORAGE, tokenInput);
 
         const validToken = await VerifyToken(tokenInput);
         if (validToken) {
@@ -32,7 +33,6 @@ const TokenPrompt = ({ onToken }: TokenProps) => {
         } else {
             setPopover('Invalid token!');
         }
-        localStorage.setItem(TOKEN_STORAGE, tokenInput);
     };
 
     const onPopoverClose = () => {
