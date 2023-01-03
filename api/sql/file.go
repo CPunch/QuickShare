@@ -81,3 +81,17 @@ func (db *DBHandler) InsertFile(token, name, hash, mime string, expire time.Dura
 
 	return &dbFile, nil
 }
+
+func (db *DBHandler) GetExpiredFiles(limit int) (*[]iface.File, error) {
+	rows, err := db.Query("SELECT * FROM files WHERE Expire <= ? ORDER BY Expire LIMIT ?", time.Now(), limit)
+	if err != nil {
+		return nil, err
+	}
+
+	var files []iface.File
+	if err := scan.Rows(&files, rows); err != nil {
+		return nil, err
+	}
+
+	return &files, nil
+}
