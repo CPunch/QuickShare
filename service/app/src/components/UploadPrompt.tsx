@@ -1,5 +1,6 @@
-import { Paper, Box, Typography, LinearProgress, Divider } from "@mui/material";
+import { Paper, Box, Typography, LinearProgress, Divider, Grid, Chip } from "@mui/material";
 import FileUploadIcon from '@mui/icons-material/FileUpload';
+import DownloadIcon from '@mui/icons-material/Download';
 import React from 'react';
 import Dropzone from "react-dropzone";
 
@@ -22,14 +23,14 @@ type FileEntry = {
 const UploadPrompt = ({ token }: UploadProps) => {
     const [fileList, setFileList] = React.useState<FileEntry[]>([]);
 
-    const onDropped = async (files: File[]) => {
+    const onDropped = (files: File[]) => {
         // grab selected file data
         let fileDataList: FileEntry[] = files.map(file => {
             return { name: file.name, progress: 0, raw: file , id: UID++};
         });
         setFileList(fileList.concat(fileDataList));
 
-        await Promise.all(fileDataList.map(async fileData => {
+        fileDataList.forEach(async fileData => {
             // TODO: grab expire time from a dropdown or something
             const fileResult = await UploadFile(token, "0s", fileData.name, fileData.raw, (progress) => {        
                 setFileList(currentList => {
@@ -55,29 +56,42 @@ const UploadPrompt = ({ token }: UploadProps) => {
                 }
                 return newList;
             });
-        }));
+        });
     }
 
     return (
-        <Box>
+        <Box alignContent='center' sx={{ width: '100%' }}>
             <Dropzone onDrop={onDropped}>
                 {({getRootProps, getInputProps}) => (
-                    <Paper elevation={0} variant='outlined' sx={{ borderRadius: 2, padding: 2, marginBottom: 2 }}>
-                        <div {...getRootProps()}>
-                            <FileUploadIcon sx={{ width: '100%', height: '200px' }}></FileUploadIcon>
-                            <input {...getInputProps()} />
-                            <Typography>Drag 'n' drop some files here, or click to select files</Typography>
-                        </div>
+                    <Paper elevation={0} variant="outlined"  sx={{ borderRadius: 2, padding: 2, marginBottom: 2, textAlign: 'center' }} {...getRootProps()}>
+                        <FileUploadIcon sx={{ width: '100%', height: '200px' }}></FileUploadIcon>
+                        <input {...getInputProps()} />
+                        <Typography align="center" variant="caption">Drag 'n' drop or click to select files</Typography>
                     </Paper>
                 )}
             </Dropzone>
             <Divider />
             {
                 fileList.map((fileData, index) => (
-                    <Box sx={{ width: '100%' }} key={index}>
-                        <Typography>{ fileData.name }</Typography>
-                        { fileData.fileResult === undefined ? <LinearProgress color="secondary" variant="determinate" value={ fileData.progress } /> : <a href={ "/raw/" + fileData.fileResult.id }>Raw URL</a> }
-                    </Box>
+                    <Paper elevation={1} variant="outlined" sx={{ borderRadius: 2, padding: 1, marginTop: 1 }} key={index}>
+                        <Grid container spacing={1} alignItems="center" justifyContent="center">
+                            <Grid item xs={ fileData.fileResult === undefined ? 4 : 9}>
+                                <Typography noWrap>{ fileData.name }</Typography>
+                            </Grid>
+                            { fileData.fileResult === undefined 
+                                ?
+                                <Grid item xs={8}>
+                                    <LinearProgress color="secondary" variant="determinate" value={ fileData.progress } />
+                                </Grid>
+                                :
+                                <>
+                                <Grid item xs={3} alignItems="center" justifyContent="center" sx={{ display: 'flex'}}>
+                                    <Chip icon={<DownloadIcon />} label="Raw" component="a" href={ "/raw/" + fileData.fileResult.id } clickable />
+                                </Grid>
+                                </>
+                            }
+                        </Grid>
+                    </Paper>
                 ))
             }
         </Box>

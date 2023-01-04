@@ -38,15 +38,12 @@ const App = () => {
                         sx={{
                             borderRadius: 2,
                             margin: 2,
-                            paddingLeft: 0,
-                            paddingRight: 1,
-                            paddingTop: 0,
-                            paddingBottom: 0,
+                            padding: 0,
                             maxWidth: 500,
                             width: "100%",
                         }}
                         >
-                        <CardContent sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <CardContent sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
                             { page === 'upload' ? <UploadPrompt token={token} /> : <TokenPrompt onToken={onToken}/> }
                         </CardContent>
                     </Card>

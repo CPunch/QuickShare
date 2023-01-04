@@ -41,8 +41,8 @@ const TokenPrompt = ({ onToken }: TokenProps) => {
 
     return (
         <Grid container spacing={1} >
-            <Grid item xs={10}>
-                <Box sx={{ display: 'flex', alignItems: 'flex-end' }}>
+            <Grid item xs={10} alignItems="center" justifyContent="center"  sx={{ display: 'flex' }}>
+                <Box sx={{ display: 'flex', alignItems: 'flex-end', width: '100%' }}>
                     <KeyIcon sx={{ marginRight: 1, marginBottom: 'auto', marginTop: 'auto', weight: 'bold' }} />
                     <Popover
                         anchorEl={inputRef.current}
@@ -68,7 +68,7 @@ const TokenPrompt = ({ onToken }: TokenProps) => {
                     />
                 </Box>
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={2} alignItems="center" justifyContent="center" sx={{ display: 'flex' }}>
                 <Box>
                     <Button
                         variant="outlined"
