@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS files (
     Sha256 TEXT NOT NULL,
     Name TEXT DEFAULT 'Unnamed file' NOT NULL,
     Mime TEXT DEFAULT 'application/octet-stream' NOT NULL,
-    Expire TIMESTAMP NOT NULL,
+    Expire TIMESTAMP DEFAULT NULL,
     uploadIP TEXT NOT NULL DEFAULT '127.0.0.1', -- filler for now, maybe not needed?
     uploadTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(TokenID) REFERENCES tokens(ID)
