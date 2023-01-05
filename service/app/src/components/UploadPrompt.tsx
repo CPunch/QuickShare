@@ -1,3 +1,4 @@
+import { useSnackbar } from 'notistack';
 import { Paper, Box, Typography, LinearProgress, Divider, Grid, Chip, Collapse, ToggleButton, Button } from "@mui/material";
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import ContentPasteGoIcon from '@mui/icons-material/ContentPasteGo';
@@ -67,12 +68,13 @@ const UploadPrompt = ({ token }: UploadProps) => {
     }
     
     const RenderFileEntry = ({ fileData }: RenderFileEntryProps) => {
-        const [isOpen, setIsOpen] = React.useState(false);
+        const [isOpen, setIsOpen] = React.useState(true);
+        const { enqueueSnackbar } = useSnackbar();
     
         return (
             <Paper elevation={1} variant="outlined" sx={{ borderRadius: 2, padding: 1, marginTop: 1 }} key={fileData.id}>
                 <Grid container spacing={1} alignItems="center" justifyContent="center">
-                    <Grid item xs={ fileData.fileResult === undefined ? 4 : 9}>
+                    <Grid item xs={ fileData.fileResult === undefined ? 4 : 8}>
                         <Typography noWrap>{ fileData.name }</Typography>
                     </Grid>
                     { fileData.fileResult === undefined 
@@ -85,7 +87,10 @@ const UploadPrompt = ({ token }: UploadProps) => {
                         <Grid item xs={2} alignItems="center" justifyContent="center" sx={{ display: 'flex'}}>
                             <Button onClick={() => {
                                 if (fileData.fileResult !== undefined) {
-                                    navigator.clipboard.writeText("/raw/" + fileData.fileResult.id)
+                                    navigator.clipboard.writeText(window.location.protocol + '//' + window.location.hostname + '/raw/' + fileData.fileResult.id);
+                                    enqueueSnackbar('Copied ' + fileData.name + ' URL!', {
+                                        variant: 'success',
+                                    });
                                 }
                             }}>
                                 <ContentPasteGoIcon />
@@ -93,7 +98,7 @@ const UploadPrompt = ({ token }: UploadProps) => {
                         </Grid>
                         <Grid item xs={2} alignItems="center" justifyContent="center" sx={{ display: 'flex'}}>
                             <ToggleButton
-                                value="open"
+                                value="close"
                                 size="small"
                                 selected={!isOpen}
                                 onChange={() => {
@@ -108,11 +113,11 @@ const UploadPrompt = ({ token }: UploadProps) => {
                 </Grid>
                 <Collapse in={!isOpen}>
                     <Grid container spacing={0}>
-                        <Grid item xs={8}>
-                            <Typography variant="caption" noWrap>SHA256: { fileData.fileResult === undefined ? '' : fileData.fileResult.hash.toUpperCase() }</Typography>
+                        <Grid item xs={10} sx={{ maxWidth: '100%' }}>
+                            <Typography variant="caption" noWrap fontSize='0.5rem'>SHA256: { fileData.fileResult === undefined ? '' : fileData.fileResult.hash.toUpperCase() }</Typography>
                         </Grid>
-                        <Grid item xs={4}>
-                            <Typography variant="caption" noWrap>{ fileData.fileResult === undefined ? '' : fileData.fileResult.mime }</Typography>
+                        <Grid item xs={2} sx={{ maxWidth: '100%' }}>
+                            <Typography variant="caption" noWrap fontSize='0.5rem'>{ fileData.fileResult === undefined ? '' : fileData.fileResult.mime }</Typography>
                         </Grid>
                     </Grid>
                 </Collapse>
