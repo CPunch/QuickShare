@@ -1,6 +1,7 @@
-import { Paper, Box, Typography, LinearProgress, Divider, Grid, Chip } from "@mui/material";
+import { Paper, Box, Typography, LinearProgress, Divider, Grid, Chip, Collapse, ToggleButton, Button } from "@mui/material";
 import FileUploadIcon from '@mui/icons-material/FileUpload';
-import DownloadIcon from '@mui/icons-material/Download';
+import ContentPasteGoIcon from '@mui/icons-material/ContentPasteGo';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import React from 'react';
 import Dropzone from "react-dropzone";
 
@@ -23,6 +24,7 @@ type FileEntry = {
 const UploadPrompt = ({ token }: UploadProps) => {
     const [fileList, setFileList] = React.useState<FileEntry[]>([]);
 
+    // upload handler
     const onDropped = (files: File[]) => {
         // grab selected file data
         let fileDataList: FileEntry[] = files.map(file => {
@@ -59,6 +61,66 @@ const UploadPrompt = ({ token }: UploadProps) => {
         });
     }
 
+    // list item
+    type RenderFileEntryProps = {
+        fileData: FileEntry
+    }
+    
+    const RenderFileEntry = ({ fileData }: RenderFileEntryProps) => {
+        const [isOpen, setIsOpen] = React.useState(false);
+    
+        return (
+            <Paper elevation={1} variant="outlined" sx={{ borderRadius: 2, padding: 1, marginTop: 1 }} key={fileData.id}>
+                <Grid container spacing={1} alignItems="center" justifyContent="center">
+                    <Grid item xs={ fileData.fileResult === undefined ? 4 : 9}>
+                        <Typography noWrap>{ fileData.name }</Typography>
+                    </Grid>
+                    { fileData.fileResult === undefined 
+                        ?
+                        <Grid item xs={8}>
+                            <LinearProgress color="secondary" variant="determinate" value={ fileData.progress } />
+                        </Grid>
+                        :
+                        <>
+                        <Grid item xs={2} alignItems="center" justifyContent="center" sx={{ display: 'flex'}}>
+                            <Button onClick={() => {
+                                if (fileData.fileResult !== undefined) {
+                                    navigator.clipboard.writeText("/raw/" + fileData.fileResult.id)
+                                }
+                            }}>
+                                <ContentPasteGoIcon />
+                            </Button>
+                        </Grid>
+                        <Grid item xs={2} alignItems="center" justifyContent="center" sx={{ display: 'flex'}}>
+                            <ToggleButton
+                                value="open"
+                                size="small"
+                                selected={!isOpen}
+                                onChange={() => {
+                                    setIsOpen(!isOpen);
+                                }}
+                                >
+                                <KeyboardArrowDownIcon />
+                            </ToggleButton>
+                        </Grid>
+                        </>
+                    }
+                </Grid>
+                <Collapse in={!isOpen}>
+                    <Grid container spacing={0}>
+                        <Grid item xs={8}>
+                            <Typography variant="caption" noWrap>SHA256: { fileData.fileResult === undefined ? '' : fileData.fileResult.hash.toUpperCase() }</Typography>
+                        </Grid>
+                        <Grid item xs={4}>
+                            <Typography variant="caption" noWrap>{ fileData.fileResult === undefined ? '' : fileData.fileResult.mime }</Typography>
+                        </Grid>
+                    </Grid>
+                </Collapse>
+            </Paper>
+        )
+    }
+
+    // render upload page
     return (
         <Box alignContent='center' sx={{ width: '100%' }}>
             <Dropzone onDrop={onDropped}>
@@ -72,26 +134,8 @@ const UploadPrompt = ({ token }: UploadProps) => {
             </Dropzone>
             <Divider />
             {
-                fileList.map((fileData, index) => (
-                    <Paper elevation={1} variant="outlined" sx={{ borderRadius: 2, padding: 1, marginTop: 1 }} key={index}>
-                        <Grid container spacing={1} alignItems="center" justifyContent="center">
-                            <Grid item xs={ fileData.fileResult === undefined ? 4 : 9}>
-                                <Typography noWrap>{ fileData.name }</Typography>
-                            </Grid>
-                            { fileData.fileResult === undefined 
-                                ?
-                                <Grid item xs={8}>
-                                    <LinearProgress color="secondary" variant="determinate" value={ fileData.progress } />
-                                </Grid>
-                                :
-                                <>
-                                <Grid item xs={3} alignItems="center" justifyContent="center" sx={{ display: 'flex'}}>
-                                    <Chip icon={<DownloadIcon />} label="Raw" component="a" href={ "/raw/" + fileData.fileResult.id } clickable />
-                                </Grid>
-                                </>
-                            }
-                        </Grid>
-                    </Paper>
+                fileList.map((fileData) => (
+                    <RenderFileEntry fileData={fileData} />
                 ))
             }
         </Box>
