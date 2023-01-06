@@ -1,14 +1,20 @@
+# QuickShare
 
-
-```sh
-$ service host
-```
-> starts the web service
+Plug-n'-play file sharing web service. Simply generate a token using:
 
 ```sh
 $ service token --new
 ```
-> generates a new token
+> This will also generate a default `config.ini` file. Set the config absolute path using the `-c` flag.
+
+Copy the displayed token, then start the web service using:
+
+```sh
+$ service host --port 80
+```
+> Note: to keep the service up use `screen`, or even better [write your own systemd service file](https://wiki.debian.org/systemd/Services)
+
+Next, navigate to the web service in your browser and use the generated token to login and start sharing!
 
 # Project structure
 
@@ -24,5 +30,4 @@ $ service token --new
     - `/web`: web client (for go)
 
 TODOs:
-- make web portal
 - finish file expiration (implemented in routes, cli & db, just need watchdog/cronjob service)
