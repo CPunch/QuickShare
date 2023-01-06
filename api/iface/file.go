@@ -30,6 +30,7 @@ type File struct {
 	ID         string    `json:"id"`
 	TokenID    string    `json:"tokenId"`
 	Sha256     string    `json:"hash"`
+	Size       int64     `json:"size"`
 	Name       string    `json:"name"`
 	Mime       string    `json:"mime"`
 	Expire     *NullTime `json:"expire"`

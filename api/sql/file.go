@@ -60,22 +60,16 @@ func (db *DBHandler) GetFilesByToken(token string) (*[]iface.File, error) {
 	return &files, nil
 }
 
-func (db *DBHandler) InsertFile(token, name, hash, mime string, expire time.Duration) (*iface.File, error) {
-	var nullExpireTime *iface.NullTime
-	if expire == 0 {
-		nullExpireTime = nil
-	} else {
-		nullExpireTime = &iface.NullTime{Time: time.Now().Add(expire), Valid: true}
-	}
-
+func (db *DBHandler) InsertFile(token, name, hash, mime string, size int64, expire time.Duration) (*iface.File, error) {
 	rows, err := db.Query(
-		"INSERT INTO files(ID, TokenID, Name, Sha256, Mime, Expire) VALUES(?, ?, ?, ?, ?, ?) RETURNING *",
+		"INSERT INTO files(ID, TokenID, Name, Sha256, Size, Mime, Expire) VALUES(?, ?, ?, ?, ?, ?, ?) RETURNING *",
 		uuid.New().String(),
 		token,
 		name,
 		hash,
+		size,
 		mime,
-		nullExpireTime,
+		&iface.NullTime{Time: time.Now().Add(expire), Valid: expire != 0}, // if expire == 0, NULL is set
 	)
 	if err != nil {
 		return nil, err

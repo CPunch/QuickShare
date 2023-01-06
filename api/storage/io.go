@@ -56,9 +56,9 @@ func (storage *StorageIOHandler) AcceptFile(header *multipart.FileHeader, file m
 		return nil, err
 	}
 	defer rawFile.Close()
-	io.Copy(rawFile, file)
+	size, _ := io.Copy(rawFile, file)
 
-	return &iface.File{Name: header.Filename, Sha256: hash, Mime: mType.String()}, nil
+	return &iface.File{Name: header.Filename, Sha256: hash, Mime: mType.String(), Size: size}, nil
 }
 
 // reads whole file into memory from storage

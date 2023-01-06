@@ -74,7 +74,7 @@ func (server *Service) uploadEndpointHandler() http.HandlerFunc {
 			log.Fatal("[service/uploadEndpointHandler]: StorageHandler error ", err)
 		}
 
-		storedFile, err = db.InsertFile(token, storedFile.Name, storedFile.Sha256, storedFile.Mime, expireTime)
+		storedFile, err = db.InsertFile(token, storedFile.Name, storedFile.Sha256, storedFile.Mime, storedFile.Size, expireTime)
 		if err != nil {
 			http.Error(w, "Failed to insert file into the database!", http.StatusInternalServerError)
 			log.Fatal("[service/uploadEndpointHandler]: SQL Error ", err)

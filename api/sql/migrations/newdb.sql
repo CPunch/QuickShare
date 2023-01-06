@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS files (
     ID TEXT PRIMARY KEY UNIQUE NOT NULL, -- TODO: called ID, really a slug, is it worth changing the name?
     TokenID TEXT NOT NULL,
     Sha256 TEXT NOT NULL,
+    Size BIGINT NOT NULL,
     Name TEXT DEFAULT 'Unnamed file' NOT NULL,
     Mime TEXT DEFAULT 'application/octet-stream' NOT NULL,
     Expire TIMESTAMP DEFAULT NULL,
