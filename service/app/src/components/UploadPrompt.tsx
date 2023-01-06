@@ -87,7 +87,7 @@ const UploadPrompt = ({ token }: UploadProps) => {
                         <Grid item xs={2} alignItems="center" justifyContent="center" sx={{ display: 'flex'}}>
                             <Button onClick={() => {
                                 if (fileData.fileResult !== undefined) {
-                                    navigator.clipboard.writeText(window.location.protocol + '//' + window.location.hostname + '/raw/' + fileData.fileResult.id);
+                                    navigator.clipboard.writeText(window.location.origin + '/raw/' + fileData.fileResult.id);
                                     enqueueSnackbar('Copied ' + fileData.name + ' URL!', {
                                         variant: 'success',
                                     });

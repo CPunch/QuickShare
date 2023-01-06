@@ -61,7 +61,6 @@ func (db *DBHandler) GetFilesByToken(token string) (*[]iface.File, error) {
 }
 
 func (db *DBHandler) InsertFile(token, name, hash, mime string, expire time.Duration) (*iface.File, error) {
-
 	var nullExpireTime *iface.NullTime
 	if expire == 0 {
 		nullExpireTime = nil
