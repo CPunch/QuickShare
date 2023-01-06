@@ -7,6 +7,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import AlarmIcon from '@mui/icons-material/Alarm';
 
 import { FileResult } from '../api/web';
+import { TryRounded } from '@mui/icons-material';
 
 export type FileEntry = {
     id: number,
@@ -38,6 +39,26 @@ const sizeAbbreviate = (size: number) => {
     }
 
     return sizeString + "b";
+}
+
+// tries to copy text to clipboard. this can fail !
+const simpleCopy = (text: string): boolean => {
+    try {
+        navigator.clipboard.writeText(text);
+    } catch {
+        const tempText = document.createElement("textarea");
+        tempText.value = text;
+        document.body.appendChild(tempText);
+        tempText.focus();
+        tempText.select();
+        try {
+            document.execCommand('copy');
+        } catch (err) {
+            return false;
+        }
+        document.body.removeChild(tempText);
+    }
+    return true;
 }
 
 const RenderFileEntry = ({ fileData }: RenderFileEntryProps) => {
@@ -100,10 +121,15 @@ const RenderFileEntry = ({ fileData }: RenderFileEntryProps) => {
                         </Grid>
                     </Grid>
                     <Chip size="small" icon={<ContentPasteGoIcon />} variant="outlined" label="Copy URL" clickable onClick={() => {
-                        navigator.clipboard.writeText(window.location.origin + '/raw/' + fileData.fileResult!.id);
-                        enqueueSnackbar('Copied ' + fileData.name + ' URL!', {
-                            variant: 'success',
-                        });
+                        if (simpleCopy(window.location.origin + '/raw/' + fileData.fileResult!.id)) {
+                            enqueueSnackbar('Copied ' + fileData.name + ' URL!', {
+                                variant: 'success',
+                            });
+                        } else {
+                            enqueueSnackbar('Failed to copy ' + fileData.name + ' URL!', {
+                                variant: 'error',
+                            });
+                        }
                     }} />
                     { fileData.fileResult.expire === null
                         ?
