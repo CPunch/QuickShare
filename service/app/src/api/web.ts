@@ -6,9 +6,9 @@ export interface FileResult {
     hash: string,
     name: string,
     mime: string,
-    expire: string,
+    expire: Date | null,
     uploadIp: string,
-    uploadTime: string,
+    uploadTime: Date,
 };
 
 const VerifyToken = async (token: string): Promise<boolean> => {
@@ -21,12 +21,13 @@ const VerifyToken = async (token: string): Promise<boolean> => {
         body: form,
     };
 
+    // TODO: maybe switch this to axios to be more cohesive ?
     return fetch("/api/token", options).then((response) => {
         return response.status == 200
     });
 };
 
-// TODO: move these parameters into a props interface?
+// TODO: move these parameters into a props interface ?
 const UploadFile = async (token: string, expire: string, fileName: string, fileData: File, progressCallback: (progress: number) => void): Promise<FileResult | null> => {
     // create request data
     let form = new FormData();
@@ -39,7 +40,6 @@ const UploadFile = async (token: string, expire: string, fileName: string, fileD
         url: "/api/upload",
         data: form,
         onUploadProgress: (p) => {
-            console.log(p);
             if (p.total === undefined) {
                 return
             }
@@ -52,7 +52,6 @@ const UploadFile = async (token: string, expire: string, fileName: string, fileD
             return null
         }
 
-        console.log(response.data)
         return response.data as FileResult
     })
 }

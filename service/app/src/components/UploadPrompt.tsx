@@ -3,6 +3,7 @@ import { Paper, Box, Typography, LinearProgress, Divider, Grid, Chip, Collapse, 
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import ContentPasteGoIcon from '@mui/icons-material/ContentPasteGo';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import AlarmIcon from '@mui/icons-material/Alarm';
 import React from 'react';
 import Dropzone from "react-dropzone";
 
@@ -25,6 +26,18 @@ type FileEntry = {
 const UploadPrompt = ({ token }: UploadProps) => {
     const [fileList, setFileList] = React.useState<FileEntry[]>([]);
 
+    const updateFileListEntry = (id: number, elems: any) => {
+        setFileList(currentList => {
+            const newList = currentList.slice();
+            const indx = newList.findIndex(e => e.id === id);
+            newList[indx] = {
+                ...newList[indx],
+                ...elems
+            }
+            return newList;
+        });
+    }
+
     // upload handler
     const onDropped = (files: File[]) => {
         // grab selected file data
@@ -36,14 +49,7 @@ const UploadPrompt = ({ token }: UploadProps) => {
         fileDataList.forEach(async fileData => {
             // TODO: grab expire time from a dropdown or something
             const fileResult = await UploadFile(token, "0s", fileData.name, fileData.raw, (progress) => {        
-                setFileList(currentList => {
-                    const newList = currentList.slice();
-                    const elem = newList.find(e => e.id === fileData.id);
-                    if (elem !== undefined) {
-                        elem.progress = progress;
-                    }
-                    return newList;
-                });
+                updateFileListEntry(fileData.id, { progress });
             });
 
             if (fileResult === null) { // failed to upload !!! :sob:
@@ -51,14 +57,7 @@ const UploadPrompt = ({ token }: UploadProps) => {
                 return;
             }
 
-            setFileList(currentList => {
-                const newList = currentList.slice();
-                const elem = newList.find(e => e.id === fileData.id);
-                if (elem !== undefined) {
-                    elem.fileResult = fileResult;
-                }
-                return newList;
-            });
+            updateFileListEntry(fileData.id, { fileResult });
         });
     }
 
@@ -111,16 +110,29 @@ const UploadPrompt = ({ token }: UploadProps) => {
                         </>
                     }
                 </Grid>
-                <Collapse in={!isOpen}>
-                    <Grid container spacing={0}>
-                        <Grid item xs={10} sx={{ maxWidth: '100%' }}>
-                            <Typography variant="caption" noWrap fontSize='0.5rem'>SHA256: { fileData.fileResult === undefined ? '' : fileData.fileResult.hash.toUpperCase() }</Typography>
+                { fileData.fileResult === undefined
+                    ?
+                    <>{/* typescript freaks out if i don't check fileResult for being undefined ! */}</>
+                    :
+                    <Collapse in={!isOpen}>
+                        {/* <Grid container spacing={0}>
+                            <Grid item xs={4}>
+                                <Chip icon={<AlarmIcon />} label={ fileData.fileResult.expire === null ? 'Never' : fileData.fileResult.expire.getTime() } />
+                            </Grid>
+                            <Grid item xs={4}>
+
+                            </Grid>
+                        </Grid> */}
+                        <Grid container spacing={0}>
+                            <Grid item xs={10} sx={{ maxWidth: '100%' }}>
+                                <Typography variant="caption" noWrap fontSize='0.5rem'>SHA256: { fileData.fileResult.hash.toUpperCase() }</Typography>
+                            </Grid>
+                            <Grid item xs={2} sx={{ maxWidth: '100%' }}>
+                                <Typography variant="caption" noWrap fontSize='0.5rem'>{ fileData.fileResult.mime }</Typography>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={2} sx={{ maxWidth: '100%' }}>
-                            <Typography variant="caption" noWrap fontSize='0.5rem'>{ fileData.fileResult === undefined ? '' : fileData.fileResult.mime }</Typography>
-                        </Grid>
-                    </Grid>
-                </Collapse>
+                    </Collapse>
+                }
             </Paper>
         )
     }
