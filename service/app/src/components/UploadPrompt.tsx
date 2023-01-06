@@ -57,7 +57,7 @@ const UploadPrompt = ({ token }: UploadProps) => {
             }
             return newList;
         });
-    }
+    };
 
     // upload handler
     const onDropped = (files: File[]) => {
@@ -95,9 +95,7 @@ const UploadPrompt = ({ token }: UploadProps) => {
             <Paper elevation={1} variant="outlined" sx={{ boxShadow: 1, borderRadius: 2, padding: 1, marginTop: 1 }} key={fileData.id}>
                 <Grid container spacing={1} alignItems="center" justifyContent="center">
                     <Grid item xs={ fileData.fileResult === undefined ? 4 : 7}>
-                        <Tooltip title={ fileData.name }>
-                            <Typography noWrap>{ fileData.name }</Typography>
-                        </Tooltip>
+                        <Typography noWrap>{ fileData.name }</Typography>
                     </Grid>
                     { fileData.fileResult === undefined 
                         ?
@@ -126,31 +124,33 @@ const UploadPrompt = ({ token }: UploadProps) => {
                 </Grid>
                 { fileData.fileResult === undefined
                     ?
-                    <>{/* typescript freaks out if i don't check fileResult for being undefined ! */}</>
+                    <>{/* i do not perceive -.- */}</>
                     :
                     <Collapse in={!isOpen}>
-                        <Divider sx={{ paddingTop: 1 }} />
-                        <Grid container spacing={0} sx={{ paddingBottom: 0.5 }}>
-                            <Grid item xs={10} sx={{ maxWidth: '100%' }}>
-                                <Typography variant="caption" noWrap fontFamily="Monospace" fontSize="0.5rem">Name: { fileData.fileResult.name }</Typography>
+                        <Divider sx={{ paddingTop: 1}} />
+                        <Grid container spacing={0} sx={{ paddingTop: 0.5, paddingBottom: 0.5 }}>
+                            <Grid item xs={9}>
+                                <Tooltip title={ fileData.name }>
+                                    <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'Name: ' + fileData.fileResult.name }</Typography>
+                                </Tooltip>
                             </Grid>
-                            <Grid item xs={2} sx={{ maxWidth: '100%' }} alignItems="right" justifyContent="right">
-                                <Typography variant="caption" noWrap fontFamily="Monospace" fontSize="0.5rem">Size: { sizeAbbreviate(fileData.fileResult.size) }</Typography>
+                            <Grid item xs={3} textAlign="right">
+                                <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'Size: ' + sizeAbbreviate(fileData.fileResult.size) }</Typography>
                             </Grid>
-                            <Grid item xs={12} sx={{ maxWidth: '100%' }}>
-                                <Typography variant="caption" noWrap fontFamily="Monospace" fontSize="0.5rem">SHA256: { fileData.fileResult.hash.toUpperCase() }</Typography>
+                            <Grid item xs={12}>
+                                <Tooltip title={ fileData.fileResult.hash }>
+                                    <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'SHA256: ' + fileData.fileResult.hash.toUpperCase() }</Typography>
+                                </Tooltip>
                             </Grid>
-                            <Grid item xs={4} sx={{ maxWidth: '100%' }}>
-                                <Typography variant="caption" noWrap fontFamily="Monospace" fontSize="0.5rem">Uploaded: { fileData.fileResult.uploadTime.toString() }</Typography>
+                            <Grid item xs={6}>
+                                <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'Uploaded: ' + fileData.fileResult.uploadTime.toString() }</Typography>
                             </Grid>
                         </Grid>
                         <Chip size="small" icon={<ContentPasteGoIcon />} variant="outlined" label="Copy URL" clickable onClick={() => {
-                            if (fileData.fileResult !== undefined) {
-                                navigator.clipboard.writeText(window.location.origin + '/raw/' + fileData.fileResult.id);
-                                enqueueSnackbar('Copied ' + fileData.name + ' URL!', {
-                                    variant: 'success',
-                                });
-                            }
+                            navigator.clipboard.writeText(window.location.origin + '/raw/' + fileData.fileResult!.id);
+                            enqueueSnackbar('Copied ' + fileData.name + ' URL!', {
+                                variant: 'success',
+                            });
                         }} />
                         { fileData.fileResult.expire === null
                             ?
