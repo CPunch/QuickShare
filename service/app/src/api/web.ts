@@ -4,6 +4,7 @@ export interface FileResult {
     id: string,
     tokenId: string,
     hash: string,
+    size: number,
     name: string,
     mime: string,
     expire: Date | null,

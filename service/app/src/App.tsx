@@ -27,11 +27,11 @@ const App = () => {
 
     return (
         <ThemeProvider theme={darkTheme}>
-            <CssBaseline />
             <SnackbarProvider maxSnack={4} iconVariant={{
-                    success: <CheckCircleOutlineIcon />,
-                    error: <ErrorOutlineIcon />,
-                }}>
+                success: <CheckCircleOutlineIcon />,
+                error: <ErrorOutlineIcon />,
+            }} anchorOrigin={{ horizontal: 'right', vertical: 'top' }}>
+                <CssBaseline />
                 <Grid
                     container
                     spacing={0}

@@ -1,8 +1,9 @@
 import { useSnackbar } from 'notistack';
-import { Paper, Box, Typography, LinearProgress, Divider, Grid, Chip, Collapse, ToggleButton, Button } from "@mui/material";
+import { Paper, Box, Typography, LinearProgress, Divider, Grid, Chip, Collapse, IconButton, Tooltip } from "@mui/material";
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import ContentPasteGoIcon from '@mui/icons-material/ContentPasteGo';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import AlarmIcon from '@mui/icons-material/Alarm';
 import React from 'react';
 import Dropzone from "react-dropzone";
@@ -14,6 +15,26 @@ export interface UploadProps {
 };
 
 let UID = 0;
+
+const sizeAbbreviate = (size: number) => {
+    let sizeString = size.toString();
+    if (size >= 1000) {
+        const suffixes = ["", "k", "m", "g", "t", "p"];
+        let suffixNum = Math.floor(sizeString.length / 3);
+        let shortValue: number = 0;
+
+        for (let prec = 2; prec >= 1; prec--) {
+            shortValue = parseFloat((suffixNum != 0 ? (size / Math.pow(1000,suffixNum)) : size).toPrecision(prec))
+            if (shortValue.toString().replace(/[^a-zA-Z 0-9]+/g, '').length <= 2) {
+                break;
+            }
+        }
+
+        sizeString = (shortValue % 1 != 0 ? shortValue.toFixed(1) : shortValue.toString()) + suffixes[suffixNum]
+    }
+
+    return sizeString + "b";
+}
 
 type FileEntry = {
     id: number,
@@ -61,20 +82,22 @@ const UploadPrompt = ({ token }: UploadProps) => {
         });
     }
 
-    // list item
+    // list item (TODO: move this to it's own file in components directory)
     type RenderFileEntryProps = {
         fileData: FileEntry
     }
-    
+
     const RenderFileEntry = ({ fileData }: RenderFileEntryProps) => {
         const [isOpen, setIsOpen] = React.useState(true);
         const { enqueueSnackbar } = useSnackbar();
     
         return (
-            <Paper elevation={1} variant="outlined" sx={{ borderRadius: 2, padding: 1, marginTop: 1 }} key={fileData.id}>
+            <Paper elevation={1} variant="outlined" sx={{ boxShadow: 1, borderRadius: 2, padding: 1, marginTop: 1 }} key={fileData.id}>
                 <Grid container spacing={1} alignItems="center" justifyContent="center">
-                    <Grid item xs={ fileData.fileResult === undefined ? 4 : 8}>
-                        <Typography noWrap>{ fileData.name }</Typography>
+                    <Grid item xs={ fileData.fileResult === undefined ? 4 : 7}>
+                        <Tooltip title={ fileData.name }>
+                            <Typography noWrap>{ fileData.name }</Typography>
+                        </Tooltip>
                     </Grid>
                     { fileData.fileResult === undefined 
                         ?
@@ -83,29 +106,20 @@ const UploadPrompt = ({ token }: UploadProps) => {
                         </Grid>
                         :
                         <>
-                        <Grid item xs={2} alignItems="center" justifyContent="center" sx={{ display: 'flex'}}>
-                            <Button onClick={() => {
-                                if (fileData.fileResult !== undefined) {
-                                    navigator.clipboard.writeText(window.location.origin + '/raw/' + fileData.fileResult.id);
-                                    enqueueSnackbar('Copied ' + fileData.name + ' URL!', {
-                                        variant: 'success',
-                                    });
-                                }
-                            }}>
-                                <ContentPasteGoIcon />
-                            </Button>
+                        <Grid item xs={4} alignItems="right" justifyContent="right" sx={{ display: 'flex'}}>
+                            <Tooltip title={ fileData.fileResult.mime }>
+                                <Chip size="small" variant="outlined" label={ fileData.fileResult.mime } />
+                            </Tooltip>
                         </Grid>
-                        <Grid item xs={2} alignItems="center" justifyContent="center" sx={{ display: 'flex'}}>
-                            <ToggleButton
-                                value="close"
+                        <Grid item xs={1} alignItems="right" justifyContent="right" sx={{ display: 'flex'}}>
+                            <IconButton
                                 size="small"
-                                selected={!isOpen}
-                                onChange={() => {
+                                onClick={() => {
                                     setIsOpen(!isOpen);
                                 }}
                                 >
-                                <KeyboardArrowDownIcon />
-                            </ToggleButton>
+                                {isOpen ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon /> }
+                            </IconButton>
                         </Grid>
                         </>
                     }
@@ -115,22 +129,35 @@ const UploadPrompt = ({ token }: UploadProps) => {
                     <>{/* typescript freaks out if i don't check fileResult for being undefined ! */}</>
                     :
                     <Collapse in={!isOpen}>
-                        {/* <Grid container spacing={0}>
-                            <Grid item xs={4}>
-                                <Chip icon={<AlarmIcon />} label={ fileData.fileResult.expire === null ? 'Never' : fileData.fileResult.expire.getTime() } />
-                            </Grid>
-                            <Grid item xs={4}>
-
-                            </Grid>
-                        </Grid> */}
-                        <Grid container spacing={0}>
+                        <Divider sx={{ paddingTop: 1 }} />
+                        <Grid container spacing={0} sx={{ paddingBottom: 0.5 }}>
                             <Grid item xs={10} sx={{ maxWidth: '100%' }}>
-                                <Typography variant="caption" noWrap fontSize='0.5rem'>SHA256: { fileData.fileResult.hash.toUpperCase() }</Typography>
+                                <Typography variant="caption" noWrap fontFamily="Monospace" fontSize="0.5rem">Name: { fileData.fileResult.name }</Typography>
                             </Grid>
-                            <Grid item xs={2} sx={{ maxWidth: '100%' }}>
-                                <Typography variant="caption" noWrap fontSize='0.5rem'>{ fileData.fileResult.mime }</Typography>
+                            <Grid item xs={2} sx={{ maxWidth: '100%' }} alignItems="right" justifyContent="right">
+                                <Typography variant="caption" noWrap fontFamily="Monospace" fontSize="0.5rem">Size: { sizeAbbreviate(fileData.fileResult.size) }</Typography>
+                            </Grid>
+                            <Grid item xs={12} sx={{ maxWidth: '100%' }}>
+                                <Typography variant="caption" noWrap fontFamily="Monospace" fontSize="0.5rem">SHA256: { fileData.fileResult.hash.toUpperCase() }</Typography>
+                            </Grid>
+                            <Grid item xs={4} sx={{ maxWidth: '100%' }}>
+                                <Typography variant="caption" noWrap fontFamily="Monospace" fontSize="0.5rem">Uploaded: { fileData.fileResult.uploadTime.toString() }</Typography>
                             </Grid>
                         </Grid>
+                        <Chip size="small" icon={<ContentPasteGoIcon />} variant="outlined" label="Copy URL" clickable onClick={() => {
+                            if (fileData.fileResult !== undefined) {
+                                navigator.clipboard.writeText(window.location.origin + '/raw/' + fileData.fileResult.id);
+                                enqueueSnackbar('Copied ' + fileData.name + ' URL!', {
+                                    variant: 'success',
+                                });
+                            }
+                        }} />
+                        { fileData.fileResult.expire === null
+                            ?
+                            <></>
+                            :
+                            <Chip size="small" icon={<AlarmIcon />} variant="outlined" label={ 'Expires: ' + fileData.fileResult.expire.toString() } />
+                        }
                     </Collapse>
                 }
             </Paper>
@@ -142,7 +169,7 @@ const UploadPrompt = ({ token }: UploadProps) => {
         <Box alignContent='center' sx={{ width: '100%' }}>
             <Dropzone onDrop={onDropped}>
                 {({getRootProps, getInputProps}) => (
-                    <Paper elevation={0} variant="outlined"  sx={{ borderRadius: 2, padding: 2, marginBottom: 2, textAlign: 'center' }} {...getRootProps()}>
+                    <Paper elevation={0} variant="outlined"  sx={{ boxShadow: 1, borderRadius: 2, padding: 2, marginBottom: 1, textAlign: 'center' }} {...getRootProps()}>
                         <FileUploadIcon sx={{ width: '100%', height: '200px' }}></FileUploadIcon>
                         <input {...getInputProps()} />
                         <Typography align="center" variant="caption">Drag 'n' drop or click to select files</Typography>
