@@ -9,6 +9,7 @@ import (
 	"github.com/CPunch/QuickShare/api/sql"
 	"github.com/CPunch/QuickShare/api/storage"
 	"github.com/CPunch/QuickShare/config"
+	"github.com/CPunch/QuickShare/service/jobs"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -37,6 +38,8 @@ func NewService(ctx context.Context) *Service {
 
 	service.mux.Post(config.UPLOAD_ENDPOINT, service.uploadEndpointHandler())
 	service.mux.Post(config.TOKEN_ENDPOINT, service.verifyTokenEndpointHandler())
+
+	jobs.StartJobs(ctx)
 	return service
 }
 
