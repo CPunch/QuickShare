@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS tokens (
 );
 
 CREATE TABLE IF NOT EXISTS files (
-    ID TEXT PRIMARY KEY UNIQUE NOT NULL, -- TODO: called ID, really a slug, is it worth changing the name?
+    ID TEXT PRIMARY KEY UNIQUE NOT NULL,
     TokenID TEXT NOT NULL,
     Sha256 TEXT NOT NULL,
     Size BIGINT NOT NULL,
