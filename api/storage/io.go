@@ -50,13 +50,19 @@ func (storage *StorageIOHandler) AcceptFile(header *multipart.FileHeader, file m
 	}
 	file.Seek(0, io.SeekStart) // restart stream
 
-	// write file to IO storage (we reuse the file on-disk if it's been uploaded before by naming the file the hash)
-	rawFile, err := os.OpenFile(storage.root+hash, os.O_WRONLY|os.O_CREATE, 0666)
-	if err != nil {
-		return nil, err
+	// write file to IO storage (we reuse the file on-disk if it's been uploaded before)
+	filePath := storage.root + hash
+	var size int64
+	if stat, err := os.Stat(filePath); os.IsNotExist(err) {
+		rawFile, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE, 0666)
+		if err != nil {
+			return nil, err
+		}
+		defer rawFile.Close()
+		size, _ = io.Copy(rawFile, file)
+	} else {
+		size = stat.Size()
 	}
-	defer rawFile.Close()
-	size, _ := io.Copy(rawFile, file)
 
 	return &iface.File{Name: header.Filename, Sha256: hash, Mime: mType.String(), Size: size}, nil
 }
