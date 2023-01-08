@@ -39,13 +39,18 @@ func LoadConfig(ctx context.Context, configFile string) context.Context {
 	// ============================ Database config
 	var db *sql.DBHandler
 
-	if dbPath := cfg.Section("sqlite").Key("file").String(); dbPath != "" {
-		db, err = sql.OpenLiteDB(dbPath)
-		if err != nil {
-			log.Print(err)
+	if cfg.HasSection("db.sqlite") {
+		if cfg.Section("db.sqlite").HasKey("file") {
+			dbPath := cfg.Section("db.sqlite").Key("file").String()
+			db, err = sql.OpenLiteDB(dbPath)
+			if err != nil {
+				log.Print(err)
+			}
+		} else {
+			log.Fatal("Config section 'db.sqlite' missing 'file' key!")
 		}
-	} else {
-		log.Fatal("Config is missing an 'sqlite' section!")
+	} else { // TODO: as quickshare supports more db's add the sections as needed
+		log.Fatal("Config is missing a 'db.*' section!")
 	}
 
 	if err := db.Setup(); err != nil {
@@ -57,13 +62,17 @@ func LoadConfig(ctx context.Context, configFile string) context.Context {
 	// ============================ Storage config
 	var store storage.StorageHandler
 
-	if rootDir := cfg.Section("storage").Key("rootDir").String(); rootDir != "" {
-		store = storage.NewStorageIO(rootDir)
+	if cfg.HasSection("storage.io") {
+		if cfg.Section("storage.io").HasKey("rootDir") {
+			rootDir := cfg.Section("storage.io").Key("rootDir").String()
+			store = storage.NewStorageIO(rootDir)
+		} else {
+			log.Fatal("Config section 'storage.io' missing 'rootDir' key!")
+		}
 	} else {
 		log.Fatal("Config is missing a storage section!")
 	}
 
 	ctx = context.WithValue(ctx, config.CONTEXT_STORAGE, store)
-
 	return ctx
 }
