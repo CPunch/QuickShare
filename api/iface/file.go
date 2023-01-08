@@ -2,6 +2,7 @@ package iface
 
 import (
 	"database/sql/driver"
+	"encoding/json"
 	"time"
 )
 
@@ -16,6 +17,15 @@ type NullTime struct {
 func (nt *NullTime) Scan(value interface{}) error {
 	nt.Time, nt.Valid = value.(time.Time)
 	return nil
+}
+
+// support json.Marshal()
+func (nt *NullTime) MarshalJSON() ([]byte, error) {
+	if nt.Valid {
+		return json.Marshal(nt.Time)
+	}
+
+	return json.Marshal(nil)
 }
 
 // Value implements the driver Valuer interface.
