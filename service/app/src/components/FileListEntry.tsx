@@ -67,7 +67,7 @@ const RenderFileEntry = ({ fileData }: RenderFileEntryProps) => {
     return (
         <Paper elevation={1} variant="outlined" sx={{ boxShadow: 1, borderRadius: 2, padding: 1, marginTop: 1 }} key={fileData.id}>
             <Grid container spacing={1} alignItems="center" justifyContent="center">
-                <Grid item xs={ fileData.fileResult === undefined ? 4 : 7}>
+                <Grid item xs={ fileData.fileResult === undefined ? 4 : 6}>
                     <Typography noWrap>{ fileData.name }</Typography>
                 </Grid>
                 { fileData.fileResult === undefined 
@@ -77,12 +77,12 @@ const RenderFileEntry = ({ fileData }: RenderFileEntryProps) => {
                     </Grid>
                     :
                     <>
-                    <Grid item xs={4} alignItems="right" justifyContent="right" sx={{ display: 'flex'}}>
-                        <Tooltip title={ fileData.fileResult.mime }>
-                            <Chip size="small" variant="outlined" label={ fileData.fileResult.mime } />
+                    <Grid item xs={4.75} alignItems="right" justifyContent="right" sx={{ display: 'flex'}}>
+                        <Tooltip title={ fileData.fileResult.expire === null ? fileData.fileResult.mime : fileData.fileResult.mime + ' - expires at ' + fileData.fileResult.expire }>
+                            <Chip size="small" variant="outlined" label={ fileData.fileResult.mime } icon={ fileData.fileResult.expire === null ? <></> : <AlarmIcon /> } />
                         </Tooltip>
                     </Grid>
-                    <Grid item xs={1} alignItems="right" justifyContent="right" sx={{ display: 'flex'}}>
+                    <Grid item xs={1.25} alignItems="right" justifyContent="right" sx={{ display: 'flex'}}>
                         <IconButton
                             size="small"
                             onClick={() => {
@@ -122,7 +122,7 @@ const RenderFileEntry = ({ fileData }: RenderFileEntryProps) => {
                             ?
                             <></>
                             :
-                            <Grid item xs={6}>
+                            <Grid item xs={6} textAlign="right">
                                 <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'Expires: ' + fileData.fileResult.expire.toString() }</Typography>
                             </Grid>
                         }

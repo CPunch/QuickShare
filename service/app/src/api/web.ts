@@ -53,6 +53,7 @@ const UploadFile = async (token: string, expire: string, fileName: string, fileD
             return null
         }
 
+        console.log(response.data)
         return response.data as FileResult
     })
 }
