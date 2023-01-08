@@ -69,7 +69,7 @@ func (db *DBHandler) InsertFile(token, name, hash, mime string, size int64, expi
 		hash,
 		size,
 		mime,
-		&iface.NullTime{Time: time.Now().Add(expire), Valid: expire != 0}, // if expire == 0, NULL is set
+		&iface.NullTime{Time: time.Now().Add(expire).Round(time.Second), Valid: expire != 0}, // if expire == 0, NULL is set
 	)
 	if err != nil {
 		return nil, err
