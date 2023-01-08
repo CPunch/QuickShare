@@ -7,8 +7,8 @@ import (
 
 	"github.com/google/subcommands"
 
-	"github.com/CPunch/QuickShare/api/jobs"
 	"github.com/CPunch/QuickShare/service"
+	"github.com/CPunch/QuickShare/service/jobs"
 )
 
 type hostCommand struct {
