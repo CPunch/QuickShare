@@ -8,6 +8,8 @@ import (
 	"github.com/CPunch/QuickShare/api/storage"
 )
 
+// removes the file from the database by ID, then if no other files exist with the same hash
+// in the database, the file is also removed from storage.
 func RemoveFile(storage storage.StorageHandler, db *sql.DBHandler, file *iface.File) error {
 	_, err := db.RemoveFile(file.ID)
 	if err != nil {

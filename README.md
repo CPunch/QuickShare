@@ -28,6 +28,12 @@ Next, navigate to the web service in your browser and use the generated token to
     - `/sql`: database handler and driver
     - `/storage`: file storage
     - `/web`: web client (for go)
+- `util`: general utility functions
 
 TODOs:
-- finish file expiration (implemented in routes, cli & db, just need watchdog/cronjob service)
+- cmd/cli: make cli pretty
+- service: maybe add a /info/ route ? show file info; service/app: maybe add file previews (image viewer/video player)
+- service/app: add expiration dropdown to upload page
+- service/app: ability to delete files, maybe a 'files' tab ?
+- service/app: general 'make things pretty'
+- *: grep 'TODO' && do them lol
