@@ -7,7 +7,6 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import AlarmIcon from '@mui/icons-material/Alarm';
 
 import { FileResult } from '../api/web';
-import { TryRounded } from '@mui/icons-material';
 
 export type FileEntry = {
     id: number,
@@ -24,7 +23,7 @@ export type RenderFileEntryProps = {
 const sizeAbbreviate = (size: number) => {
     let sizeString = size.toString();
     if (size >= 1000) {
-        const suffixes = ["", "k", "m", "g", "t", "p"];
+        const suffixes = ["", "K", "M", "G", "T", "P"];
         let suffixNum = Math.floor(sizeString.length / 3);
         let shortValue: number = 0;
 
@@ -38,7 +37,7 @@ const sizeAbbreviate = (size: number) => {
         sizeString = (shortValue % 1 != 0 ? shortValue.toFixed(1) : shortValue.toString()) + suffixes[suffixNum]
     }
 
-    return sizeString + "b";
+    return sizeString + "B";
 }
 
 // tries to copy text to clipboard. this can fail !
@@ -119,6 +118,14 @@ const RenderFileEntry = ({ fileData }: RenderFileEntryProps) => {
                         <Grid item xs={6}>
                             <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'Uploaded: ' + fileData.fileResult.uploadTime.toString() }</Typography>
                         </Grid>
+                        { fileData.fileResult.expire === null
+                            ?
+                            <></>
+                            :
+                            <Grid item xs={6}>
+                                <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'Expires: ' + fileData.fileResult.expire.toString() }</Typography>
+                            </Grid>
+                        }
                     </Grid>
                     <Chip size="small" icon={<ContentPasteGoIcon />} variant="outlined" label="Copy URL" clickable onClick={() => {
                         if (simpleCopy(window.location.origin + '/raw/' + fileData.fileResult!.id)) {
@@ -131,12 +138,6 @@ const RenderFileEntry = ({ fileData }: RenderFileEntryProps) => {
                             });
                         }
                     }} />
-                    { fileData.fileResult.expire === null
-                        ?
-                        <></>
-                        :
-                        <Chip size="small" icon={<AlarmIcon />} variant="outlined" label={ 'Expires: ' + fileData.fileResult.expire.toString() } />
-                    }
                 </Collapse>
             }
         </Paper>

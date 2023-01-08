@@ -24,7 +24,7 @@ func (db *DBHandler) GetFileById(id string) (*iface.File, error) {
 }
 
 // files are stored many to one. 1 file on disk can represent many files in the db
-func (db *DBHandler) GetFilesByHash(hash string) (*[]iface.File, error) {
+func (db *DBHandler) GetFilesByHash(hash string) ([]iface.File, error) {
 	row, err := db.Query("SELECT * FROM files WHERE Sha256=?", hash)
 	if err != nil {
 		return nil, err
@@ -35,10 +35,10 @@ func (db *DBHandler) GetFilesByHash(hash string) (*[]iface.File, error) {
 		return nil, err
 	}
 
-	return &files, nil
+	return files, nil
 }
 
-func (db *DBHandler) GetAllFiles() (*[]iface.File, error) {
+func (db *DBHandler) GetAllFiles() ([]iface.File, error) {
 	rows, _ := db.Query("SELECT * FROM files")
 
 	var files []iface.File
@@ -46,10 +46,10 @@ func (db *DBHandler) GetAllFiles() (*[]iface.File, error) {
 		return nil, err
 	}
 
-	return &files, nil
+	return files, nil
 }
 
-func (db *DBHandler) GetFilesByToken(token string) (*[]iface.File, error) {
+func (db *DBHandler) GetFilesByToken(token string) ([]iface.File, error) {
 	rows, _ := db.Query("SELECT * FROM files WHERE TokenID=?", token)
 
 	var files []iface.File
@@ -57,7 +57,7 @@ func (db *DBHandler) GetFilesByToken(token string) (*[]iface.File, error) {
 		return nil, err
 	}
 
-	return &files, nil
+	return files, nil
 }
 
 func (db *DBHandler) InsertFile(token, name, hash, mime string, size int64, expire time.Duration) (*iface.File, error) {
@@ -83,7 +83,21 @@ func (db *DBHandler) InsertFile(token, name, hash, mime string, size int64, expi
 	return &dbFile, nil
 }
 
-func (db *DBHandler) GetExpiredFiles(limit int) (*[]iface.File, error) {
+func (db *DBHandler) RemoveFile(id string) (*iface.File, error) {
+	rows, err := db.Query("DELETE FROM files WHERE ID=? RETURNING *", id)
+	if err != nil {
+		return nil, err
+	}
+
+	var dbFile iface.File
+	if err := scan.Row(&dbFile, rows); err != nil {
+		return nil, err
+	}
+
+	return &dbFile, nil
+}
+
+func (db *DBHandler) GetExpiredFiles(limit int) ([]iface.File, error) {
 	rows, err := db.Query("SELECT * FROM files WHERE Expire <= ? ORDER BY Expire LIMIT ?", time.Now(), limit)
 	if err != nil {
 		return nil, err
@@ -94,5 +108,5 @@ func (db *DBHandler) GetExpiredFiles(limit int) (*[]iface.File, error) {
 		return nil, err
 	}
 
-	return &files, nil
+	return files, nil
 }

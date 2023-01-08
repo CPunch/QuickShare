@@ -27,6 +27,15 @@ const UploadPrompt = ({ token }: UploadProps) => {
         });
     };
 
+    const removeFileListEntry = (id: number) => {
+        setFileList(currentList => {
+            const newList = currentList.slice();
+            const indx = currentList.findIndex(e => e.id === id);
+            newList.slice(indx, 1);
+            return newList;
+        });
+    };
+
     // upload handler
     const onDropped = (files: File[]) => {
         // grab selected file data

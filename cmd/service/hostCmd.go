@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/subcommands"
 
+	"github.com/CPunch/QuickShare/api/jobs"
 	"github.com/CPunch/QuickShare/service"
 )
 
@@ -31,6 +32,8 @@ func (s *hostCommand) SetFlags(f *flag.FlagSet) {
 }
 
 func (s *hostCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
+	jobs.StartJobs(ctx)
+
 	server := service.NewService(ctx)
 	if err := server.Serve("0.0.0.0", s.port); err != nil {
 		log.Print(err)

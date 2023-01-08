@@ -14,6 +14,9 @@ type StorageHandler interface {
 	// Accepts the file and stores it. Does NOT insert the file into the db.
 	AcceptFile(*multipart.FileHeader, multipart.File) (*iface.File, error)
 
+	// Remove the file from storage
+	DeleteFile(hash string) error
+
 	// Grabs the file data from storage by hash (reads the whole file!! can be memory-intensive!!)
 	GetFile(hash string) ([]byte, error)
 

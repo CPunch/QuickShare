@@ -61,6 +61,15 @@ func (storage *StorageIOHandler) AcceptFile(header *multipart.FileHeader, file m
 	return &iface.File{Name: header.Filename, Sha256: hash, Mime: mType.String(), Size: size}, nil
 }
 
+// Remove the file from storage
+func (storage *StorageIOHandler) DeleteFile(hash string) error {
+	if err := os.Remove(storage.root + hash); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // reads whole file into memory from storage
 func (storage *StorageIOHandler) GetFile(hash string) ([]byte, error) {
 	data, err := os.ReadFile(storage.root + hash)
