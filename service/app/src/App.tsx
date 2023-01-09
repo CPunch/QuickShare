@@ -9,6 +9,8 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TokenPrompt from './components/TokenPrompt';
 import UploadPrompt from './components/UploadPrompt';
 
+import { GetFiles, FileResult } from './api/web';
+
 const darkTheme = createTheme({
     palette: {
         mode: 'dark',
@@ -19,10 +21,12 @@ type PageState = 'token' | 'upload';
 
 const App = () => {
     const [page, setPage] = React.useState<PageState>('token');
+    const [files, setFiles] = React.useState<FileResult[]>([])
     const [token, setToken] = React.useState('');
-    const onToken = (token: string) => {
-        setPage('upload');
+    const onToken = async (token: string) => {
         setToken(token);
+        setFiles(await GetFiles(token));
+        setPage('upload');
     }
 
     return (
@@ -51,7 +55,7 @@ const App = () => {
                             }}
                             >
                             <CardContent sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                                { page === 'upload' ? <UploadPrompt token={token} /> : <TokenPrompt onToken={onToken}/> }
+                                { page === 'upload' ? <UploadPrompt token={token} files={files} /> : <TokenPrompt onToken={onToken}/> }
                             </CardContent>
                         </Card>
                     </Grid>

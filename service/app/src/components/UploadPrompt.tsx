@@ -2,13 +2,16 @@ import React from 'react';
 import Dropzone from "react-dropzone";
 import { Paper, Box, Typography, Divider, FormHelperText, FormControl, Tabs, Tab, MenuItem, Select, Grid, LinearProgress, Button, IconButton } from "@mui/material";
 import FileUploadIcon from '@mui/icons-material/FileUpload';
-import CancelIcon from '@mui/icons-material/Cancel';
+import ClearIcon from '@mui/icons-material/Clear';
+import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
+import FolderIcon from '@mui/icons-material/Folder';
 
 import { FileResult, UploadFile } from '../api/web';
 import { RenderFileEntry } from './FileListEntry';
 
 export interface UploadProps {
     token: string,
+    files: FileResult[],
 };
 
 export type UploadEntry = {
@@ -30,9 +33,9 @@ const ExpireTimes = [
 
 let UID = 0;
 
-const UploadPrompt = ({ token }: UploadProps) => {
+const UploadPrompt = ({ token, files }: UploadProps) => {
     const [uploadList, setUploadList] = React.useState<UploadEntry[]>([]);
-    const [fileList, setFileList] = React.useState<FileResult[]>([]);
+    const [fileList, setFileList] = React.useState<FileResult[]>(files);
     const [expireTime, setExpireTime] = React.useState("0s");
     const [selectedTab, setSelectedTab] = React.useState(0);
 
@@ -104,23 +107,23 @@ const UploadPrompt = ({ token }: UploadProps) => {
 
     // render upload page
     return (
-        <Box alignContent='center' justifyContent='center' sx={{ width: '100%' }}>
-            <Tabs 
+        <Box sx={{ width: '100%' }}>
+            <Tabs
                 value={selectedTab}
                 onChange={(e, i) => setSelectedTab(i)}
                 variant="fullWidth"
                 sx={{ mb: 1 }}
             >
-                <Tab label="Upload" />
-                <Tab label="Files" />
+                <Tab label="Upload" icon={<FileUploadIcon />} iconPosition="start" />
+                <Tab label="Files" icon={<FolderIcon />} iconPosition="start" />
             </Tabs>
             <Box hidden={selectedTab !== 0}>
                 <Dropzone onDrop={onDropped}>
                     {({getRootProps, getInputProps}) => (
                         <Paper elevation={0} variant="outlined"  sx={{ boxShadow: 1, borderRadius: 2, padding: 2, textAlign: 'center' }} {...getRootProps()}>
-                            <FileUploadIcon sx={{ width: '100%', height: '200px' }}></FileUploadIcon>
+                            <FileUploadIcon sx={{ width: '100%', height: '200px' }} />
                             <input {...getInputProps()} />
-                            <Typography align="center" variant="caption">Drag 'n' drop or click to select files</Typography>
+                            <Typography variant="subtitle1">Drag 'n' drop or click to select files</Typography>
                         </Paper>
                     )}
                 </Dropzone>
@@ -140,20 +143,20 @@ const UploadPrompt = ({ token }: UploadProps) => {
                     uploadList.map(uploadData => (
                         <Paper elevation={1} variant="outlined" sx={{ boxShadow: 1, borderRadius: 2, padding: 1, marginTop: 1 }} key={ uploadData.id }>
                             <Grid container spacing={1} alignItems="center" justifyContent="center">
-                                <Grid item xs={uploadData.isUploading ? 10.75 : 4}>
+                                <Grid item xs={uploadData.isUploading ? 4 : 11}>
                                     <Typography noWrap>{ uploadData.name }</Typography>
                                 </Grid>
                                 { uploadData.isUploading &&
-                                    <Grid item xs={6.75}>
+                                    <Grid item xs={7}>
                                         <LinearProgress color="secondary" variant="determinate" value={ uploadData.progress } />
                                     </Grid>
                                 }
-                                <Grid item xs={1.25} alignItems="right" justifyContent="right" sx={{ display: 'flex'}}>
+                                <Grid item xs={1} alignItems="right" justifyContent="right" sx={{ display: 'flex' }}>
                                     <IconButton
                                         size="small"
                                         onClick={() => removeUploadListEntry(uploadData.id)}
                                         >
-                                        <CancelIcon />
+                                        <ClearIcon />
                                     </IconButton>
                                 </Grid>
                             </Grid>
@@ -170,11 +173,18 @@ const UploadPrompt = ({ token }: UploadProps) => {
                     </Button>
                 )}
             </Box>
-            <Box hidden={selectedTab !== 1} sx={{ minHeight: '200px' }}>
+            <Box hidden={selectedTab !== 1} sx={{ minHeight: '300px' }}>
                 {
-                    fileList.length > 0 ? fileList.map((fileResult) => (
+                    fileList.length > 0
+                    ?
+                    fileList.map((fileResult) => (
                         <RenderFileEntry fileResult={fileResult} />
-                    )) : <Typography>Upload files to get started!</Typography>
+                    ))
+                    :
+                    <Paper elevation={0} variant="outlined" sx={{ boxShadow: 1, borderRadius: 2, padding: 2, textAlign: 'center'}}>
+                        <QuestionMarkIcon sx={{ width: '100%', height: '200px' }} />
+                        <Typography variant="subtitle1">Whoops! No files have been uploaded!</Typography>
+                    </Paper>
                 }
             </Box>
         </Box>

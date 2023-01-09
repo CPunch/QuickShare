@@ -122,3 +122,26 @@ func (server *Service) verifyTokenEndpointHandler() http.HandlerFunc {
 		json.NewEncoder(w).Encode(tkn)
 	}
 }
+
+func (server *Service) fileListEndpointHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := r.ParseMultipartForm(1 * 1024 * 1024)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse MultipartForm: %v", err), http.StatusBadRequest)
+			return
+		}
+
+		// grab form data
+		token := r.FormValue("token")
+		tkn, err := server.db.GetTokenById(token)
+		if err != nil || tkn == nil {
+			http.Error(w, "Unauthorized token!", http.StatusUnauthorized)
+			return
+		}
+
+		files, err := server.db.GetFilesByToken(token)
+		// respond with file list
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(files)
+	}
+}
