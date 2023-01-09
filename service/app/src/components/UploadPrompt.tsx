@@ -1,6 +1,6 @@
 import React from 'react';
 import Dropzone from "react-dropzone";
-import { Paper, Box, Typography, Divider, FormHelperText, FormControl, Tabs, Tab, MenuItem, Select, Grid, LinearProgress, Button, IconButton } from "@mui/material";
+import { Paper, Box, Typography, Divider, FormHelperText, FormControl, Tabs, Tab, MenuItem, Select, Grid, LinearProgress, Button, IconButton, Badge } from "@mui/material";
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import ClearIcon from '@mui/icons-material/Clear';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
@@ -38,6 +38,7 @@ const UploadPrompt = ({ token, files }: UploadProps) => {
     const [fileList, setFileList] = React.useState<FileResult[]>(files);
     const [expireTime, setExpireTime] = React.useState("0s");
     const [selectedTab, setSelectedTab] = React.useState(0);
+    const [newFilesBadge, setNewFilesBadge] = React.useState(0);
 
     const updateUploadListEntry = (id: number, elems: any) => {
         setUploadList(currentList => {
@@ -98,6 +99,7 @@ const UploadPrompt = ({ token, files }: UploadProps) => {
                 return;
             }
 
+            setNewFilesBadge(value => value+1);
             removeUploadListEntry(uploadData.id);
             setFileList(currentList => {
                 return currentList.concat([fileResult])
@@ -110,12 +112,14 @@ const UploadPrompt = ({ token, files }: UploadProps) => {
         <Box sx={{ width: '100%' }}>
             <Tabs
                 value={selectedTab}
-                onChange={(e, i) => setSelectedTab(i)}
+                onChange={(e, i) => {setSelectedTab(i); setNewFilesBadge(0);}}
                 variant="fullWidth"
-                sx={{ mb: 1 }}
+                textColor="secondary"
+                indicatorColor="secondary"
+                sx={{ mb: 1, marginTop: -2}}
             >
                 <Tab label="Upload" icon={<FileUploadIcon />} iconPosition="start" />
-                <Tab label="Files" icon={<FolderIcon />} iconPosition="start" />
+                <Tab label="Files" icon={<Badge badgeContent={newFilesBadge} color="secondary"><FolderIcon /></Badge>} iconPosition="start" />
             </Tabs>
             <Box hidden={selectedTab !== 0}>
                 <Dropzone onDrop={onDropped}>
