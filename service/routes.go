@@ -103,7 +103,7 @@ func (server *Service) uploadEndpointHandler() http.HandlerFunc {
 
 func (server *Service) verifyTokenEndpointHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		err := r.ParseMultipartForm(5 * 1024 * 1024) // keep up to 5mb of the file in memory, dump the rest to disk
+		err := r.ParseMultipartForm(1 * 1024 * 1024)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to parse MultipartForm: %v", err), http.StatusBadRequest)
 			return

@@ -13,11 +13,10 @@ export type FileEntry = {
     name: string,
     progress: number,
     raw: File,
-    fileResult?: FileResult,
 }
 
 export type RenderFileEntryProps = {
-    fileData: FileEntry
+    fileResult: FileResult
 }
 
 const sizeAbbreviate = (size: number) => {
@@ -60,86 +59,69 @@ const simpleCopy = (text: string): boolean => {
     return true;
 }
 
-const RenderFileEntry = ({ fileData }: RenderFileEntryProps) => {
+const RenderFileEntry = ({ fileResult }: RenderFileEntryProps) => {
     const [isOpen, setIsOpen] = React.useState(true);
     const { enqueueSnackbar } = useSnackbar();
 
     return (
-        <Paper elevation={1} variant="outlined" sx={{ boxShadow: 1, borderRadius: 2, padding: 1, marginTop: 1 }} key={fileData.id}>
+        <Paper elevation={1} variant="outlined" sx={{ boxShadow: 1, borderRadius: 2, padding: 1, marginTop: 1 }} key={fileResult.id}>
             <Grid container spacing={1} alignItems="center" justifyContent="center">
-                <Grid item xs={ fileData.fileResult === undefined ? 4 : 6}>
-                    <Typography noWrap>{ fileData.name }</Typography>
+                <Grid item xs={6}>
+                    <Typography noWrap>{ fileResult.name }</Typography>
                 </Grid>
-                { fileData.fileResult === undefined 
-                    ?
-                    <Grid item xs={8}>
-                        <LinearProgress color="secondary" variant="determinate" value={ fileData.progress } />
-                    </Grid>
-                    :
-                    <>
-                    <Grid item xs={4.75} alignItems="right" justifyContent="right" sx={{ display: 'flex'}}>
-                        <Tooltip title={ fileData.fileResult.expire === null ? fileData.fileResult.mime : fileData.fileResult.mime + ' - expires at ' + fileData.fileResult.expire }>
-                            <Chip size="small" variant="outlined" label={ fileData.fileResult.mime } icon={ fileData.fileResult.expire === null ? <></> : <AlarmIcon /> } />
+                <Grid item xs={4.75} alignItems="right" justifyContent="right" sx={{ display: 'flex'}}>
+                    <Tooltip title={ fileResult.expire === null ? fileResult.mime : fileResult.mime + ' - expires at ' + fileResult.expire }>
+                        <Chip size="small" variant="outlined" label={ fileResult.mime } icon={ fileResult.expire === null ? <></> : <AlarmIcon /> } />
+                    </Tooltip>
+                </Grid>
+                <Grid item xs={1.25} alignItems="right" justifyContent="right" sx={{ display: 'flex'}}>
+                    <IconButton
+                        size="small"
+                        onClick={() => {
+                            setIsOpen(!isOpen);
+                        }}
+                        >
+                        {isOpen ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon /> }
+                    </IconButton>
+                </Grid>
+            </Grid>
+            <Collapse in={!isOpen}>
+                <Divider sx={{ paddingTop: 1}} />
+                <Grid container spacing={0} sx={{ paddingTop: 0.5, paddingBottom: 0.5 }}>
+                    <Grid item xs={9}>
+                        <Tooltip title={ fileResult.name }>
+                            <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'Name: ' + fileResult.name }</Typography>
                         </Tooltip>
                     </Grid>
-                    <Grid item xs={1.25} alignItems="right" justifyContent="right" sx={{ display: 'flex'}}>
-                        <IconButton
-                            size="small"
-                            onClick={() => {
-                                setIsOpen(!isOpen);
-                            }}
-                            >
-                            {isOpen ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon /> }
-                        </IconButton>
+                    <Grid item xs={3} textAlign="right">
+                        <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'Size: ' + sizeAbbreviate(fileResult.size) }</Typography>
                     </Grid>
-                    </>
-                }
-            </Grid>
-            { fileData.fileResult === undefined
-                ?
-                <>{/* i do not perceive -.- */}</>
-                :
-                <Collapse in={!isOpen}>
-                    <Divider sx={{ paddingTop: 1}} />
-                    <Grid container spacing={0} sx={{ paddingTop: 0.5, paddingBottom: 0.5 }}>
-                        <Grid item xs={9}>
-                            <Tooltip title={ fileData.name }>
-                                <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'Name: ' + fileData.fileResult.name }</Typography>
-                            </Tooltip>
-                        </Grid>
-                        <Grid item xs={3} textAlign="right">
-                            <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'Size: ' + sizeAbbreviate(fileData.fileResult.size) }</Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Tooltip title={ fileData.fileResult.hash }>
-                                <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'SHA256: ' + fileData.fileResult.hash.toUpperCase() }</Typography>
-                            </Tooltip>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'Uploaded: ' + fileData.fileResult.uploadTime.toString() }</Typography>
-                        </Grid>
-                        { fileData.fileResult.expire === null
-                            ?
-                            <></>
-                            :
-                            <Grid item xs={6} textAlign="right">
-                                <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'Expires: ' + fileData.fileResult.expire.toString() }</Typography>
-                            </Grid>
-                        }
+                    <Grid item xs={12}>
+                        <Tooltip title={ fileResult.hash }>
+                            <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'SHA256: ' + fileResult.hash.toUpperCase() }</Typography>
+                        </Tooltip>
                     </Grid>
-                    <Chip size="small" icon={<ContentPasteGoIcon />} variant="outlined" label="Copy URL" clickable onClick={() => {
-                        if (simpleCopy(window.location.origin + '/raw/' + fileData.fileResult!.id)) {
-                            enqueueSnackbar('Copied ' + fileData.name + ' URL!', {
-                                variant: 'success',
-                            });
-                        } else {
-                            enqueueSnackbar('Failed to copy ' + fileData.name + ' URL!', {
-                                variant: 'error',
-                            });
-                        }
-                    }} />
-                </Collapse>
-            }
+                    <Grid item xs={6}>
+                        <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'Uploaded: ' + fileResult.uploadTime.toString() }</Typography>
+                    </Grid>
+                    { fileResult.expire !== null && (
+                        <Grid item xs={6} textAlign="right">
+                            <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'Expires: ' + fileResult.expire.toString() }</Typography>
+                        </Grid>
+                    )}
+                </Grid>
+                <Chip size="small" icon={<ContentPasteGoIcon />} variant="outlined" label="Copy URL" clickable onClick={() => {
+                    if (simpleCopy(window.location.origin + '/raw/' + fileResult!.id)) {
+                        enqueueSnackbar('Copied ' + fileResult.name + ' URL!', {
+                            variant: 'success',
+                        });
+                    } else {
+                        enqueueSnackbar('Failed to copy ' + fileResult.name + ' URL!', {
+                            variant: 'error',
+                        });
+                    }
+                }} />
+            </Collapse>
         </Paper>
     )
 }

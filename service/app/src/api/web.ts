@@ -29,7 +29,7 @@ const VerifyToken = async (token: string): Promise<boolean> => {
 };
 
 // TODO: move these parameters into a props interface ?
-const UploadFile = async (token: string, expire: string, fileName: string, fileData: File, progressCallback: (progress: number) => void): Promise<FileResult | null> => {
+const UploadFile = async (token: string, expire: string, fileName: string, fileData: File, abort: AbortController, progressCallback: (progress: number) => void): Promise<FileResult | null> => {
     // create request data
     let form = new FormData();
     form.append("token", token);
@@ -40,6 +40,7 @@ const UploadFile = async (token: string, expire: string, fileName: string, fileD
         method: "POST",
         url: "/api/upload",
         data: form,
+        signal: abort.signal,
         onUploadProgress: (p) => {
             if (p.total === undefined) {
                 return
