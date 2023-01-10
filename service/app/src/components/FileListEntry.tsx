@@ -5,8 +5,9 @@ import ContentPasteGoIcon from '@mui/icons-material/ContentPasteGo';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import AlarmIcon from '@mui/icons-material/Alarm';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-import { FileResult } from '../api/web';
+import { FileResult, DeleteFile } from '../api/web';
 
 export type FileEntry = {
     id: number,
@@ -16,7 +17,9 @@ export type FileEntry = {
 }
 
 export type RenderFileEntryProps = {
-    fileResult: FileResult
+    token: string,
+    fileResult: FileResult,
+    removeFileListEntry: (id: string) => void,
 }
 
 const sizeAbbreviate = (size: number) => {
@@ -60,9 +63,23 @@ const simpleCopy = (text: string): boolean => {
     return true;
 }
 
-const RenderFileEntry = ({ fileResult }: RenderFileEntryProps) => {
+const RenderFileEntry = ({ token, fileResult, removeFileListEntry }: RenderFileEntryProps) => {
     const [isOpen, setIsOpen] = React.useState(true);
     const { enqueueSnackbar } = useSnackbar();
+
+    const onDelete = async () => {
+        const success = await DeleteFile(token, fileResult.id);
+        if (success) {
+            removeFileListEntry(fileResult.id);
+            enqueueSnackbar("Successfully deleted " + fileResult.name + "!", {
+                variant: 'success',
+            });
+        } else {
+            enqueueSnackbar("Failed to delete " + fileResult.name + "!", {
+                variant: 'error',
+            });
+        }
+    }
 
     return (
         <Paper elevation={1} variant="outlined" sx={{ boxShadow: 1, borderRadius: 2, padding: 1, marginTop: 1 }} key={fileResult.id}>
@@ -111,17 +128,32 @@ const RenderFileEntry = ({ fileResult }: RenderFileEntryProps) => {
                         </Grid>
                     )}
                 </Grid>
-                <Chip size="small" icon={<ContentPasteGoIcon />} variant="outlined" label="Copy URL" clickable onClick={() => {
-                    if (simpleCopy(window.location.origin + '/raw/' + fileResult!.id)) {
-                        enqueueSnackbar('Copied ' + fileResult.name + ' URL!', {
-                            variant: 'success',
-                        });
-                    } else {
-                        enqueueSnackbar('Failed to copy ' + fileResult.name + ' URL!', {
-                            variant: 'error',
-                        });
-                    }
-                }} />
+                <Grid container spacing={1}>
+                    <Grid item xs={6}>
+                        <Chip size="small" icon={<ContentPasteGoIcon />} variant="outlined" label="Copy URL" clickable onClick={() => {
+                            if (simpleCopy(window.location.origin + '/raw/' + fileResult!.id)) {
+                                enqueueSnackbar('Copied ' + fileResult.name + ' URL!', {
+                                    variant: 'success',
+                                });
+                            } else {
+                                enqueueSnackbar('Failed to copy ' + fileResult.name + ' URL!', {
+                                    variant: 'error',
+                                });
+                            }
+                        }} />
+                    </Grid>
+                    <Grid item xs={6} alignItems="right" justifyContent="right" sx={{ display: 'flex'}}>
+                        <Tooltip title="Trash">
+                            <IconButton
+                                size="small"
+                                color="error"
+                                onClick={onDelete}
+                                >
+                                <DeleteIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </Grid>
+                </Grid>
             </Collapse>
         </Paper>
     )

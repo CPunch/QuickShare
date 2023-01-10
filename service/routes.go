@@ -136,6 +136,8 @@ func (server *Service) deleteEndpointHandler() http.HandlerFunc {
 			http.Error(w, fmt.Sprintf("Failed to delete file: %v!", err), http.StatusInternalServerError)
 			return
 		}
+
+		log.Print("Successfully removed ", file.ID)
 	}
 }
 

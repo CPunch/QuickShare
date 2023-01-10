@@ -25,7 +25,9 @@ const App = () => {
     const [token, setToken] = React.useState('');
     const onToken = async (token: string) => {
         setToken(token);
-        setFiles(await GetFiles(token));
+        const files = await GetFiles(token);
+        console.log("got files : ", files);
+        setFiles(files);
         setPage('upload');
     }
 

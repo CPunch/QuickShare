@@ -82,8 +82,14 @@ const GetFiles = async (token: string): Promise<FileResult[]> => {
         url: "/api/filelist",
         data: form,
     }).then(response => {
+        if (response.data === null) {
+            return []
+        }
+
         return response.data as FileResult[]
+    }).catch(() => {
+        return []
     });
 }
 
-export { VerifyToken, GetFiles, UploadFile }
+export { UploadFile, DeleteFile, VerifyToken, GetFiles }

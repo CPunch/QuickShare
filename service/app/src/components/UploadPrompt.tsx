@@ -62,6 +62,15 @@ const UploadPrompt = ({ token, files }: UploadProps) => {
         });
     };
 
+    const removeFileListEntry = (id: string) => {
+        setFileList(currentList => {
+            const newList = currentList.slice();
+            const indx = currentList.findIndex(e => e.id === id);
+            newList.splice(indx, 1);
+            return newList;
+        });
+    }
+
     // upload handler
     const onDropped = (files: File[]) => {
         // grab selected file data
@@ -182,7 +191,7 @@ const UploadPrompt = ({ token, files }: UploadProps) => {
                     fileList.length > 0
                     ?
                     fileList.map((fileResult) => (
-                        <RenderFileEntry fileResult={fileResult} />
+                        <RenderFileEntry token={token} fileResult={fileResult} removeFileListEntry={removeFileListEntry} />
                     ))
                     :
                     <Paper elevation={0} variant="outlined" sx={{ boxShadow: 1, borderRadius: 2, padding: 2, textAlign: 'center'}}>
