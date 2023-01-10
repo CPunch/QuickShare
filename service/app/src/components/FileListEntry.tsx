@@ -44,6 +44,7 @@ const simpleCopy = (text: string): boolean => {
     try {
         navigator.clipboard.writeText(text);
     } catch {
+        // use the deprecated method of copying text since the last one failed :(
         const tempText = document.createElement("textarea");
         tempText.value = text;
         document.body.appendChild(tempText);

@@ -94,6 +94,58 @@ func (client *WebClient) UploadFile(reader io.Reader, filename string, expire ti
 	return &file, nil
 }
 
+func (client *WebClient) DeleteFile(id string) error {
+	httpClient := &http.Client{}
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+
+	// write token
+	tknw, err := writer.CreateFormField("token")
+	if err != nil {
+		return err
+	}
+
+	if _, err := io.Copy(tknw, strings.NewReader(client.token)); err != nil {
+		return err
+	}
+
+	// write file id
+	idw, err := writer.CreateFormField("id")
+	if err != nil {
+		return err
+	}
+
+	if _, err := io.Copy(idw, strings.NewReader(id)); err != nil {
+		return err
+	}
+	writer.Close()
+
+	// send request
+	req, err := http.NewRequest("POST", client.baseUrl+config.VERIFYTOKEN_ENDPOINT, body)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	res, err := httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		// service responds with a detailed message (usually)
+		resBody, err := io.ReadAll(res.Body)
+		if err != nil {
+			return fmt.Errorf("Service responded with status code %d!", res.StatusCode)
+		}
+
+		return fmt.Errorf("Service responded with %s!", string(resBody))
+	}
+
+	// success !!
+	return nil
+}
+
 func (client *WebClient) VerifyToken() (*iface.Token, error) {
 	httpClient := &http.Client{}
 	body := &bytes.Buffer{}
@@ -111,7 +163,7 @@ func (client *WebClient) VerifyToken() (*iface.Token, error) {
 	writer.Close()
 
 	// send request
-	req, err := http.NewRequest("POST", client.baseUrl+config.TOKEN_ENDPOINT, body)
+	req, err := http.NewRequest("POST", client.baseUrl+config.VERIFYTOKEN_ENDPOINT, body)
 	if err != nil {
 		return nil, err
 	}

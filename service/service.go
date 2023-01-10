@@ -37,7 +37,8 @@ func NewService(ctx context.Context) *Service {
 	service.mux.Get("/raw/{id}", service.rawEndpointHandler())
 
 	service.mux.Post(config.UPLOAD_ENDPOINT, service.uploadEndpointHandler())
-	service.mux.Post(config.TOKEN_ENDPOINT, service.verifyTokenEndpointHandler())
+	service.mux.Post(config.DELETE_ENDPOINT, service.deleteEndpointHandler())
+	service.mux.Post(config.VERIFYTOKEN_ENDPOINT, service.verifyTokenEndpointHandler())
 	service.mux.Post(config.FILELIST_ENDPOINT, service.fileListEndpointHandler())
 
 	jobs.StartJobs(ctx)

@@ -10,36 +10,6 @@ export interface FileResult {
     uploadTime: Date,
 };
 
-const VerifyToken = async (token: string): Promise<boolean> => {
-    // create request data
-    let form = new FormData();
-    form.append("token", token);
-
-    const options: RequestInit = {
-        method: "POST",
-        body: form,
-    };
-
-    // TODO: maybe switch this to axios to be more cohesive ?
-    return fetch("/api/token", options).then((response) => {
-        return response.status == 200
-    });
-};
-
-const GetFiles = async (token: string): Promise<FileResult[]> => {
-    // create request data
-    let form = new FormData();
-    form.append("token", token);
-
-    return axios.request({
-        method: "POST",
-        url: "/api/filelist",
-        data: form,
-    }).then(response => {
-        return response.data as FileResult[]
-    });
-}
-
 // TODO: move these parameters into a props interface ?
 const UploadFile = async (token: string, expire: string, fileName: string, fileData: File, abort: AbortController, progressCallback: (progress: number) => void): Promise<FileResult | null> => {
     // create request data
@@ -69,6 +39,51 @@ const UploadFile = async (token: string, expire: string, fileName: string, fileD
         console.log(response.data)
         return response.data as FileResult
     })
+}
+
+const DeleteFile = async (token: string, id: string): Promise<boolean> => {
+    // create request data
+    let form = new FormData();
+    form.append("token", token);
+    form.append("id", id);
+
+    return axios.request({
+        method: "POST",
+        url: "/api/delete",
+        data: form,
+    }).then(response => {
+        return response.status == 200
+    });
+}
+
+const VerifyToken = async (token: string): Promise<boolean> => {
+    // create request data
+    let form = new FormData();
+    form.append("token", token);
+
+    const options: RequestInit = {
+        method: "POST",
+        body: form,
+    };
+
+    // TODO: maybe switch this to axios to be more cohesive ?
+    return fetch("/api/token", options).then((response) => {
+        return response.status == 200
+    });
+};
+
+const GetFiles = async (token: string): Promise<FileResult[]> => {
+    // create request data
+    let form = new FormData();
+    form.append("token", token);
+
+    return axios.request({
+        method: "POST",
+        url: "/api/filelist",
+        data: form,
+    }).then(response => {
+        return response.data as FileResult[]
+    });
 }
 
 export { VerifyToken, GetFiles, UploadFile }

@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/CPunch/QuickShare/util"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -98,6 +99,43 @@ func (server *Service) uploadEndpointHandler() http.HandlerFunc {
 		// respond with new file info
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(storedFile)
+	}
+}
+
+func (server *Service) deleteEndpointHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := r.ParseMultipartForm(1 * 1024 * 1024)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to parse MultipartForm: %v", err), http.StatusBadRequest)
+			return
+		}
+
+		// grab form data
+		token := r.FormValue("token")
+		tkn, err := server.db.GetTokenById(token)
+		if err != nil || tkn == nil {
+			http.Error(w, "Unauthorized token!", http.StatusUnauthorized)
+			return
+		}
+
+		id := r.FormValue("id")
+		file, err := server.db.GetFileById(id)
+		if err != nil || file == nil {
+			http.Error(w, "Unknown file ID!", http.StatusNotFound)
+			return
+		}
+
+		// verify token owns this file
+		if file.TokenID != token {
+			http.Error(w, "You don't own this file!", http.StatusUnauthorized)
+			return
+		}
+
+		// delete file
+		if err := util.RemoveFile(server.storage, server.db, file); err != nil {
+			http.Error(w, fmt.Sprintf("Failed to delete file: %v!", err), http.StatusInternalServerError)
+			return
+		}
 	}
 }
 
