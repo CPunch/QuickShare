@@ -38,12 +38,12 @@ func (nt NullTime) Value() (driver.Value, error) {
 
 type File struct {
 	ID         string    `json:"id"`
-	TokenID    string    `json:"tokenId"`
+	TokenID    string    `json:"-"` // this data should NEVER be sent to the client !!!
 	Sha256     string    `json:"hash"`
 	Size       int64     `json:"size"`
 	Name       string    `json:"name"`
 	Mime       string    `json:"mime"`
 	Expire     *NullTime `json:"expire"`
-	UploadIP   string    `json:"uploadIp"`
+	UploadIP   string    `json:"-"`
 	UploadTime time.Time `json:"uploadTime"`
 }
