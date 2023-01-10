@@ -58,7 +58,7 @@ func (s *shareCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interf
 		}
 		defer file.Close()
 
-		sharedFile, err := client.PostFile(file, filepath.Base(fpath), s.expire)
+		sharedFile, err := client.UploadFile(file, filepath.Base(fpath), s.expire)
 		if err != nil {
 			fmt.Println("Failed to upload", fpath, "--", err)
 			return subcommands.ExitFailure

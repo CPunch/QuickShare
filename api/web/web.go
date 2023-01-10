@@ -26,7 +26,7 @@ func NewClient(baseUrl, token string) *WebClient {
 	}
 }
 
-func (client *WebClient) PostFile(reader io.Reader, filename string, expire time.Duration) (*iface.File, error) {
+func (client *WebClient) UploadFile(reader io.Reader, filename string, expire time.Duration) (*iface.File, error) {
 	httpClient := &http.Client{}
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
@@ -140,4 +140,52 @@ func (client *WebClient) VerifyToken() (*iface.Token, error) {
 	}
 
 	return &tkn, nil
+}
+
+func (client *WebClient) GetFileList() ([]iface.File, error) {
+	httpClient := &http.Client{}
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+
+	// write token
+	tknw, err := writer.CreateFormField("token")
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := io.Copy(tknw, strings.NewReader(client.token)); err != nil {
+		return nil, err
+	}
+	writer.Close()
+
+	// send request
+	req, err := http.NewRequest("POST", client.baseUrl+config.FILELIST_ENDPOINT, body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	res, err := httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		// service responds with a detailed message (usually)
+		resBody, err := io.ReadAll(res.Body)
+		if err != nil {
+			return nil, fmt.Errorf("Service responded with status code %d!", res.StatusCode)
+		}
+
+		return nil, fmt.Errorf("Service responded with %s!", string(resBody))
+	}
+
+	// read response
+	var files []iface.File
+	dec := json.NewDecoder(res.Body)
+	if err := dec.Decode(&files); err != nil {
+		return nil, err
+	}
+
+	return files, nil
 }
