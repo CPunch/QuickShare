@@ -153,6 +153,7 @@ const UploadPrompt = ({ token, files }: UploadProps) => {
                 <FormControl sx={{ width: '100%', borderRadius: 2, padding: 2}}>
                     <Select
                         value={expireTime}
+                        color="secondary"
                         onChange={(e) => setExpireTime(e.target.value)}
                     >
                         {ExpireTimes.map(time => (

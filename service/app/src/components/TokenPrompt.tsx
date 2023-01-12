@@ -1,6 +1,6 @@
 import KeyIcon from '@mui/icons-material/Key';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
-import { Button, Box, TextField, Grid, Popover, Typography } from "@mui/material"
+import { Button, Box, TextField, Grid, Popover, Typography, IconButton } from "@mui/material"
 import { useSnackbar } from 'notistack';
 import React from 'react';
 
@@ -47,7 +47,7 @@ const TokenPrompt = ({ onToken }: TokenProps) => {
 
     return (
         <Grid container spacing={1} >
-            <Grid item xs={10} alignItems="center" justifyContent="center"  sx={{ display: 'flex' }}>
+            <Grid item xs={11} alignItems="center" justifyContent="center"  sx={{ display: 'flex' }}>
                 <Box sx={{ display: 'flex', alignItems: 'flex-end', width: '100%' }}>
                     <KeyIcon sx={{ marginRight: 1, marginBottom: 'auto', marginTop: 'auto', weight: 'bold' }} />
                     <Popover
@@ -67,6 +67,7 @@ const TokenPrompt = ({ onToken }: TokenProps) => {
                         ref={inputRef}
                         variant="standard"
                         value={tokenInput}
+                        color="secondary"
                         onChange={(e: any) => setTokenInput(e.target.value)}
                         placeholder="Token"
                         type="password"
@@ -74,14 +75,13 @@ const TokenPrompt = ({ onToken }: TokenProps) => {
                     />
                 </Box>
             </Grid>
-            <Grid item xs={2} alignItems="center" justifyContent="center" sx={{ display: 'flex' }}>
+            <Grid item xs={1} alignItems="right" justifyContent="right" sx={{ display: 'flex' }}>
                 <Box>
-                    <Button
-                        variant="outlined"
-                        color={popover === null ? 'primary' : 'error'}
+                    <IconButton
+                        color={popover === null ? 'secondary' : 'error'}
                         onClick={onSubmit} >
                         <KeyboardReturnIcon />
-                    </Button>
+                    </IconButton>
                 </Box>
             </Grid>
         </Grid>
