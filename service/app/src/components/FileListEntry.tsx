@@ -68,14 +68,14 @@ const RenderFileEntry = ({ token, fileResult, removeFileListEntry }: RenderFileE
     const { enqueueSnackbar } = useSnackbar();
 
     const onDelete = async () => {
-        const success = await DeleteFile(token, fileResult.id);
-        if (success) {
+        const { data, error } = await DeleteFile(token, fileResult.id);
+        if (data === true) {
             removeFileListEntry(fileResult.id);
             enqueueSnackbar("Successfully deleted " + fileResult.name + "!", {
                 variant: 'success',
             });
         } else {
-            enqueueSnackbar("Failed to delete " + fileResult.name + "!", {
+            enqueueSnackbar("Failed to delete " + fileResult.name + ": " + error, {
                 variant: 'error',
             });
         }

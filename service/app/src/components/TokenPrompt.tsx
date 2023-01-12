@@ -1,6 +1,7 @@
 import KeyIcon from '@mui/icons-material/Key';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import { Button, Box, TextField, Grid, Popover, Typography } from "@mui/material"
+import { useSnackbar } from 'notistack';
 import React from 'react';
 
 import { VerifyToken } from '../api/web';
@@ -14,6 +15,7 @@ const TOKEN_STORAGE = 'tkn';
 const TokenPrompt = ({ onToken }: TokenProps) => {
     const [popover, setPopover] = React.useState<null | string>(null);
     const inputRef = React.useRef<HTMLDivElement>(null);
+    const { enqueueSnackbar } = useSnackbar();
 
     // load token from localStorage (if it exists!)
     const [tokenInput, setTokenInput] = React.useState(() => {
@@ -26,12 +28,16 @@ const TokenPrompt = ({ onToken }: TokenProps) => {
         event.preventDefault();
         localStorage.setItem(TOKEN_STORAGE, tokenInput);
 
-        const validToken = await VerifyToken(tokenInput);
-        if (validToken) {
+        const { data, error } = await VerifyToken(tokenInput);
+        if (data === null) {
+            enqueueSnackbar('Failed to verify token: ' + error, {
+                variant: 'error'
+            });
+        } else if (data === false) {
+            setPopover('Invalid token!');
+        } else if (data === true) {
             setPopover(null);
             onToken(tokenInput);
-        } else {
-            setPopover('Invalid token!');
         }
     };
 

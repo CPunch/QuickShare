@@ -8,6 +8,7 @@ import FolderIcon from '@mui/icons-material/Folder';
 
 import { FileResult, UploadFile } from '../api/web';
 import { RenderFileEntry } from './FileListEntry';
+import { useSnackbar } from 'notistack';
 
 export interface UploadProps {
     token: string,
@@ -39,6 +40,7 @@ const UploadPrompt = ({ token, files }: UploadProps) => {
     const [expireTime, setExpireTime] = React.useState("0s");
     const [selectedTab, setSelectedTab] = React.useState(0);
     const [newFilesBadge, setNewFilesBadge] = React.useState(0);
+    const { enqueueSnackbar } = useSnackbar();
 
     const updateUploadListEntry = (id: number, elems: any) => {
         setUploadList(currentList => {
@@ -94,7 +96,7 @@ const UploadPrompt = ({ token, files }: UploadProps) => {
             if (uploadData.isUploading) return;
 
             updateUploadListEntry(uploadData.id, { isUploading: true })
-            const fileResult = await UploadFile(token, expireTime, uploadData.name, uploadData.raw, uploadData.abort, (progress) => {        
+            const { data, error } = await UploadFile(token, expireTime, uploadData.name, uploadData.raw, uploadData.abort, (progress) => {        
                 updateUploadListEntry(uploadData.id, { progress });
             });
 
@@ -103,15 +105,23 @@ const UploadPrompt = ({ token, files }: UploadProps) => {
                 return;
             }
 
-            if (fileResult === null) { // failed to upload !!! :sob:
-                console.log('wtf!!!', fileResult)
+            if (error !== null) {
+                enqueueSnackbar('Failed to upload: ' + error, {
+                    variant: 'error'
+                });
+                updateUploadListEntry(uploadData.id, { isUploading: false, progress: 0 });
+                return;
+            }
+
+            if (data === null) { // if data is null and error is null.. wtf happened??
+                console.error('wtf!!!', data)
                 return;
             }
 
             setNewFilesBadge(value => value+1);
             removeUploadListEntry(uploadData.id);
             setFileList(currentList => {
-                return currentList.concat([fileResult])
+                return currentList.concat([data])
             });
         });
     }
