@@ -190,6 +190,7 @@ const UploadPrompt = ({ token, files }: UploadProps) => {
                     <Button
                         variant="outlined"
                         onClick={onUpload}
+                        color='secondary'
                         sx={{ width: '100%', borderRadius: 2, padding: 1, marginTop: 1 }}
                     >
                         <Typography>Upload selected files</Typography>

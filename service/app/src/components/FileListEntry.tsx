@@ -74,6 +74,7 @@ const RenderFileEntry = ({ token, fileResult, removeFileListEntry }: RenderFileE
             enqueueSnackbar("Successfully deleted " + fileResult.name + "!", {
                 variant: 'success',
             });
+            setIsOpen(true);
         } else {
             enqueueSnackbar("Failed to delete " + fileResult.name + ": " + error, {
                 variant: 'error',

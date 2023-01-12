@@ -26,11 +26,11 @@ const App = () => {
     const onToken = async (token: string) => {
         setToken(token);
         let { data, error } = await GetFiles(token);
-        if (error !== null) {
+        if (data == null) {
             console.error(error)
             data = [];
         }
-        setFiles(files);
+        setFiles(data);
         setPage('upload');
     }
 
