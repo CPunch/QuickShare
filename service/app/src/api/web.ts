@@ -36,7 +36,7 @@ const UploadFile = async (token: string, expire: string, fileName: string, fileD
             progressCallback(Math.round((p.loaded * 100) / p.total))
         },
         validateStatus: status => {
-            return status >= 200;
+            return status >= 200 && status != 404;
         },
     }).then(response => {
         if (response.status != 200) {
@@ -62,7 +62,7 @@ const DeleteFile = async (token: string, id: string): Promise<ApiResponse<boolea
         url: "/api/delete",
         data: form,
         validateStatus: status => {
-            return status >= 200;
+            return status >= 200 && status != 404;
         },
     }).then(response => {
         if (response.status != 200) {
@@ -87,7 +87,7 @@ const VerifyToken = async (token: string): Promise<ApiResponse<boolean>> => {
         url: "/api/token",
         data: form,
         validateStatus: status => {
-            return status >= 200;
+            return status >= 200 && status != 404;
         },
     }).then(response => {
         if (response.status == 200) {
@@ -111,7 +111,7 @@ const GetFiles = async (token: string): Promise<ApiResponse<FileResult[]>> => {
         url: "/api/filelist",
         data: form,
         validateStatus: status => {
-            return status >= 200;
+            return status >= 200 && status != 404;
         },
     }).then(response => {
         if (response.status != 200) {

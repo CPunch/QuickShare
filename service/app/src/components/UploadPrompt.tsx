@@ -26,10 +26,11 @@ export type UploadEntry = {
 
 const ExpireTimes = [
     {label: "Never", value: '0s'},
-    {label: "5 seconds", value: '5s'},
     {label: "15 Minutes", value: '15m'},
     {label: "1 Hour", value: '1h'},
+    {label: "8 Hours", value: '8h'},
     {label: "24 Hours", value: '24h'},
+    {label: "48 Hours", value: '48h'},
 ];
 
 let UID = 0;
@@ -52,7 +53,7 @@ const UploadPrompt = ({ token, files }: UploadProps) => {
             }
             return newList;
         });
-    };
+    }
 
     const removeUploadListEntry = (id: number) => {
         setUploadList(currentList => {
@@ -62,7 +63,7 @@ const UploadPrompt = ({ token, files }: UploadProps) => {
             newList.splice(indx, 1);
             return newList;
         });
-    };
+    }
 
     const removeFileListEntry = (id: string) => {
         setFileList(currentList => {
