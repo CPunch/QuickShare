@@ -130,7 +130,7 @@ const RenderFileEntry = ({ token, fileResult, removeFileListEntry }: RenderFileE
                     )}
                 </Grid>
                 <Grid container spacing={1}>
-                    <Grid item xs={6}>
+                    <Grid item xs={6} alignItems="left" justifyContent="left" sx={{ display: 'flex', alignItems: 'center' }}>
                         <Chip size="small" icon={<ContentPasteGoIcon />} variant="outlined" label="Copy URL" clickable onClick={() => {
                             if (simpleCopy(window.location.origin + '/raw/' + fileResult!.id)) {
                                 enqueueSnackbar('Copied ' + fileResult.name + ' URL!', {
@@ -143,7 +143,7 @@ const RenderFileEntry = ({ token, fileResult, removeFileListEntry }: RenderFileE
                             }
                         }} />
                     </Grid>
-                    <Grid item xs={6} alignItems="right" justifyContent="right" sx={{ display: 'flex'}}>
+                    <Grid item xs={6} alignItems="right" justifyContent="right" sx={{ display: 'flex', alignItems: 'center' }}>
                         <Tooltip title="Trash">
                             <IconButton
                                 size="small"

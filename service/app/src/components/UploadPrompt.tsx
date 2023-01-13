@@ -3,7 +3,7 @@ import Dropzone from "react-dropzone";
 import { Paper, Box, Typography, Divider, FormHelperText, FormControl, Tabs, Tab, MenuItem, Select, Grid, LinearProgress, Button, IconButton, Badge } from "@mui/material";
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import ClearIcon from '@mui/icons-material/Clear';
-import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
+import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
 import FolderIcon from '@mui/icons-material/Folder';
 
 import { FileResult, UploadFile } from '../api/web';
@@ -199,7 +199,7 @@ const UploadPrompt = ({ token, files }: UploadProps) => {
                     </Button>
                 )}
             </Box>
-            <Box hidden={selectedTab !== 1} sx={{ minHeight: '300px' }}>
+            <Box hidden={selectedTab !== 1}>
                 {
                     fileList.length > 0
                     ?
@@ -207,10 +207,10 @@ const UploadPrompt = ({ token, files }: UploadProps) => {
                         <RenderFileEntry token={token} fileResult={fileResult} removeFileListEntry={removeFileListEntry} />
                     ))
                     :
-                    <Paper elevation={0} variant="outlined" sx={{ boxShadow: 1, borderRadius: 2, padding: 2, textAlign: 'center'}}>
-                        <QuestionMarkIcon sx={{ width: '100%', height: '200px' }} />
-                        <Typography variant="subtitle1">Whoops! No files have been uploaded!</Typography>
-                    </Paper>
+                    <Box sx={{ padding: 2, textAlign: 'center' }}>
+                        <ReportGmailerrorredIcon sx={{ width: '100%', height: '200px' }} />
+                        <Typography variant="subtitle1">Upload files from the 'Upload' tab to get started!</Typography>
+                    </Box>
                 }
             </Box>
         </Box>

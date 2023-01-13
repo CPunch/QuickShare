@@ -39,10 +39,11 @@ const App = () => {
             <SnackbarProvider maxSnack={4} iconVariant={{
                 success: <CheckCircleOutlineIcon />,
                 error: <ErrorOutlineIcon />,
-            }} anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}>
+            }} anchorOrigin={{ horizontal: 'right', vertical: 'top' }}>
                 <CssBaseline />
                 <Grid
                     container
+                    spacing={0}
                     style={{ marginTop: '50px' }}
                 >
                     <Grid item xs={12} sx={{ width: "100%", display: 'flex', justifyContent: 'center'}}>
