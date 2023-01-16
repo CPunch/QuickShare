@@ -16,6 +16,11 @@ import (
 //go:embed app/dist
 var clientFS embed.FS
 
+func jsonResponse(w http.ResponseWriter, data any) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(data)
+}
+
 func (server *Service) staticClientHandler() http.Handler {
 	// "/index.html" now becomes "/app/dist/index.html"
 	app, err := fs.Sub(clientFS, "app/dist")
@@ -42,8 +47,7 @@ func (server *Service) rawEndpointHandler() http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Content-Disposition", fmt.Sprintf(": attachment; filename=\"%s\"", file.Name))
-		if err = server.storage.SendFile(file.Sha256, w); err != nil {
+		if err = server.storage.SendFile(file, w); err != nil {
 			http.Error(w, "Unexpected error occurred, please try again!", http.StatusInternalServerError)
 			log.Fatal("[service/rawEndpointHandler]: Failed sending file! ", err)
 		}
@@ -97,8 +101,7 @@ func (server *Service) uploadEndpointHandler() http.HandlerFunc {
 		log.Printf("New file uploaded! file hash: %s id: %s mime: %s\n", storedFile.Sha256, storedFile.ID, storedFile.Mime)
 
 		// respond with new file info
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(storedFile)
+		jsonResponse(w, storedFile)
 	}
 }
 
@@ -158,8 +161,7 @@ func (server *Service) verifyTokenEndpointHandler() http.HandlerFunc {
 		}
 
 		// respond with token info
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(tkn)
+		jsonResponse(w, tkn)
 	}
 }
 
@@ -180,8 +182,8 @@ func (server *Service) fileListEndpointHandler() http.HandlerFunc {
 		}
 
 		files, err := server.db.GetFilesByToken(token)
+
 		// respond with file list
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(files)
+		jsonResponse(w, files)
 	}
 }

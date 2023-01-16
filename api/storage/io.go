@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"mime/multipart"
@@ -86,16 +87,18 @@ func (storage *StorageIOHandler) GetFile(hash string) ([]byte, error) {
 	return data, nil
 }
 
-func (storage *StorageIOHandler) SendFile(hash string, w http.ResponseWriter) error {
-	file, err := os.OpenFile(storage.root+hash, os.O_RDONLY, 0750)
+func (storage *StorageIOHandler) SendFile(ifile *iface.File, w http.ResponseWriter) error {
+	file, err := os.OpenFile(storage.root+ifile.Sha256, os.O_RDONLY, 0750)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
-	// TODO: write the mime Content-Type header, maybe accept a *iface.File instead of just the hash?
+	// send file
+	w.Header().Set("Content-Disposition", fmt.Sprintf(": attachment; filename=\"%s\"", ifile.Name))
+	w.Header().Set("Content-Type", ifile.Mime)
 	if _, err := io.Copy(w, file); err != nil {
-		return nil
+		return err
 	}
 
 	return nil

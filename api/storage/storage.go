@@ -21,7 +21,7 @@ type StorageHandler interface {
 	GetFile(hash string) ([]byte, error)
 
 	// send file to http.ResponseWriter (use this instead of GetFile() to send files to http responses!)
-	SendFile(hash string, w http.ResponseWriter) error
+	SendFile(ifile *iface.File, w http.ResponseWriter) error
 }
 
 func hashFile(file io.Reader) (string, error) {
