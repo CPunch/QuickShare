@@ -13,7 +13,8 @@ import (
 )
 
 type tokenCommand struct {
-	createNew bool
+	createNew  bool
+	listTokens bool
 }
 
 func (s *tokenCommand) Name() string {
@@ -30,6 +31,7 @@ func (s *tokenCommand) Usage() string {
 
 func (s *tokenCommand) SetFlags(f *flag.FlagSet) {
 	f.BoolVar(&s.createNew, "new", false, "Generate a new token.")
+	f.BoolVar(&s.listTokens, "list", false, "List all created tokens.")
 }
 
 func printToken(tkn *iface.Token) {
@@ -53,6 +55,20 @@ func (s *tokenCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interf
 
 		fmt.Print("Generated new token!\n\n")
 		printToken(tkn)
+		return subcommands.ExitSuccess
+	}
+
+	// $ token --list
+	if s.listTokens {
+		tkns, err := db.GetAllTokens()
+		if err != nil {
+			log.Print("[cmd/service/tokenCmd]: SQL Error while grabbing tokens ", err)
+			return subcommands.ExitFailure
+		}
+
+		for _, tkn := range tkns {
+			printToken(&tkn)
+		}
 		return subcommands.ExitSuccess
 	}
 
