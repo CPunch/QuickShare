@@ -48,3 +48,17 @@ func (db *DBHandler) InsertToken(isAdmin bool) (*iface.Token, error) {
 
 	return &tkn, nil
 }
+
+func (db *DBHandler) RemoveToken(id string) (*iface.Token, error) {
+	rows, err := db.Query("DELETE FROM tokens WHERE ID=? RETURNING *", id)
+	if err != nil {
+		return nil, err
+	}
+
+	var dbToken iface.Token
+	if err := scan.Row(&dbToken, rows); err != nil {
+		return nil, err
+	}
+
+	return &dbToken, nil
+}
