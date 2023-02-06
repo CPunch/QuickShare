@@ -8,12 +8,15 @@ import (
 
 	"github.com/CPunch/QuickShare/api/iface"
 	"github.com/CPunch/QuickShare/api/sql"
+	"github.com/CPunch/QuickShare/api/storage"
 	"github.com/CPunch/QuickShare/config"
+	"github.com/CPunch/QuickShare/util"
 	"github.com/google/subcommands"
 )
 
 type tokenCommand struct {
 	createNew  bool
+	remove     string
 	listTokens bool
 }
 
@@ -30,8 +33,9 @@ func (s *tokenCommand) Usage() string {
 }
 
 func (s *tokenCommand) SetFlags(f *flag.FlagSet) {
-	f.BoolVar(&s.createNew, "new", false, "Generate a new token.")
-	f.BoolVar(&s.listTokens, "list", false, "List all created tokens.")
+	f.BoolVar(&s.createNew, "new", false, "Generate a new token")
+	f.StringVar(&s.remove, "remove", "", "Remove a token")
+	f.BoolVar(&s.listTokens, "list", false, "List all created tokens")
 }
 
 func printToken(tkn *iface.Token) {
@@ -42,6 +46,12 @@ func (s *tokenCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interf
 	db := ctx.Value(config.CONTEXT_DB).(*sql.DBHandler)
 	if db == nil {
 		log.Print("[cmd/service/tokenCmd]: no db instance attached to context!")
+		return subcommands.ExitFailure
+	}
+
+	storage := ctx.Value(config.CONTEXT_STORAGE).(storage.StorageHandler)
+	if storage == nil {
+		log.Print("[cmd/service/tokenCmd]: no storage instance attached to context!")
 		return subcommands.ExitFailure
 	}
 
@@ -56,6 +66,22 @@ func (s *tokenCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interf
 		fmt.Print("Generated new token!\n\n")
 		printToken(tkn)
 		return subcommands.ExitSuccess
+	}
+
+	// $ token --remove
+	if s.remove != "" {
+		tkn, err := db.GetTokenById(s.remove)
+		if err != nil || tkn == nil {
+			log.Print("[cmd/service/tokenCmd]: Failed to find token! ", err)
+			return subcommands.ExitFailure
+		}
+
+		if err := util.RemoveToken(storage, db, tkn); err != nil {
+			log.Print("[cmd/service/tokenCmd]: Failed to remove token! ", err)
+			return subcommands.ExitFailure
+		}
+
+		log.Printf("Successfully removed %s!\n", s.remove)
 	}
 
 	// $ token --list

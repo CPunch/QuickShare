@@ -27,7 +27,7 @@ func (s *hostCommand) Usage() string {
 }
 
 func (s *hostCommand) SetFlags(f *flag.FlagSet) {
-	f.IntVar(&s.port, "port", 8080, "Hosts the web service on this port.")
+	f.IntVar(&s.port, "port", 8080, "Hosts the web service on this port")
 }
 
 func (s *hostCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {

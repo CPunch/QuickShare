@@ -12,9 +12,10 @@ func RemoveToken(storage storage.StorageHandler, db *sql.DBHandler, token *iface
 	// remove all files created by this token
 	files, err := db.GetFilesByToken(token.ID)
 	if err != nil {
-		return fmt.Errorf("Failed to remove file: %v", err)
+		return fmt.Errorf("Failed to remove token: %v", err)
 	}
 
+	// TODO: print out info on removed files maybe ?
 	for _, file := range files {
 		RemoveFile(storage, db, &file)
 	}
