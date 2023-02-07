@@ -16,6 +16,16 @@ import (
 //go:embed app/dist
 var clientFS embed.FS
 
+func parseForm(w http.ResponseWriter, r *http.Request, maxSize, maxUsage int64) error {
+	r.Body = http.MaxBytesReader(w, r.Body, maxSize) // accept request bodies up to maxSize
+	err := r.ParseMultipartForm(maxUsage)            // keep up to maxUsage of the file in memory, dump the rest to disk
+	if err != nil {
+		return fmt.Errorf("Failed to parse MultipartForm: %v", err)
+	}
+
+	return nil
+}
+
 func jsonResponse(w http.ResponseWriter, data any) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(data)
@@ -58,10 +68,9 @@ func (server *Service) rawEndpointHandler() http.HandlerFunc {
 
 func (server *Service) uploadEndpointHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		err := r.ParseMultipartForm(5 * 1024 * 1024) // keep up to 5mb of the file in memory, dump the rest to disk
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to parse MultipartForm: %v", err), http.StatusBadRequest)
-			return
+		// TODO: max request body size should definitely be user definable. not sure about the file memory usage
+		if err := parseForm(w, r, 1*1024*1024*1024, 5*1024*1024); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 
 		// grab form data
@@ -107,10 +116,8 @@ func (server *Service) uploadEndpointHandler() http.HandlerFunc {
 
 func (server *Service) deleteEndpointHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		err := r.ParseMultipartForm(1 * 1024 * 1024)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to parse MultipartForm: %v", err), http.StatusBadRequest)
-			return
+		if err := parseForm(w, r, 1*1024*1024, 1*1024*1024); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 
 		// grab form data
@@ -146,10 +153,8 @@ func (server *Service) deleteEndpointHandler() http.HandlerFunc {
 
 func (server *Service) verifyTokenEndpointHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		err := r.ParseMultipartForm(1 * 1024 * 1024)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to parse MultipartForm: %v", err), http.StatusBadRequest)
-			return
+		if err := parseForm(w, r, 1*1024*1024, 1*1024*1024); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 
 		// grab form data
@@ -167,10 +172,8 @@ func (server *Service) verifyTokenEndpointHandler() http.HandlerFunc {
 
 func (server *Service) fileListEndpointHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		err := r.ParseMultipartForm(1 * 1024 * 1024)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Failed to parse MultipartForm: %v", err), http.StatusBadRequest)
-			return
+		if err := parseForm(w, r, 1*1024*1024, 1*1024*1024); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 
 		// grab form data
