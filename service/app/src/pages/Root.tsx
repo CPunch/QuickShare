@@ -24,27 +24,7 @@ const Root = () => {
     }
 
     return (
-        <Grid
-            container
-            spacing={0}
-            style={{ marginTop: '50px' }}
-        >
-            <Grid item xs={12} sx={{ width: "100%", display: 'flex', justifyContent: 'center'}}>
-                <Card
-                    sx={{
-                        borderRadius: 2,
-                        margin: 2,
-                        padding: 0,
-                        maxWidth: 500,
-                        width: "100%",
-                    }}
-                    >
-                    <CardContent sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                        { page === 'upload' ? <UploadPrompt token={token} files={files} /> : <TokenPrompt onToken={onToken}/> }
-                    </CardContent>
-                </Card>
-            </Grid>
-        </Grid>
+        <>{ page === 'upload' ? <UploadPrompt token={token} files={files} /> : <TokenPrompt onToken={onToken}/> }</>
     );
 }
 

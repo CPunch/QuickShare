@@ -147,7 +147,7 @@ const UploadPrompt = ({ token, files }: UploadProps) => {
                         <Paper elevation={0} variant="outlined"  sx={{ boxShadow: 1, borderRadius: 2, padding: 2, textAlign: 'center' }} {...getRootProps()}>
                             <FileUploadIcon sx={{ width: '100%', height: '200px' }} />
                             <input {...getInputProps()} />
-                            <Typography variant="subtitle1">Drag 'n' drop or click to select files</Typography>
+                            <Typography variant="subtitle1" color="silver">Drag 'n' drop or click to select files</Typography>
                         </Paper>
                     )}
                 </Dropzone>
@@ -209,7 +209,7 @@ const UploadPrompt = ({ token, files }: UploadProps) => {
                     :
                     <Box sx={{ padding: 2, textAlign: 'center' }}>
                         <ReportGmailerrorredIcon sx={{ width: '100%', height: '200px' }} />
-                        <Typography variant="subtitle1">Upload files from the 'Upload' tab to get started!</Typography>
+                        <Typography variant="subtitle1" color="silver">Upload files from the 'Upload' tab to get started!</Typography>
                     </Box>
                 }
             </Box>
