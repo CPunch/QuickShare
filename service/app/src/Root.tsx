@@ -19,7 +19,7 @@ const darkTheme = createTheme({
 
 type PageState = 'token' | 'upload';
 
-const App = () => {
+const Root = () => {
     const [page, setPage] = React.useState<PageState>('token');
     const [files, setFiles] = React.useState<FileResult[]>([])
     const [token, setToken] = React.useState('');
