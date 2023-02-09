@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/CPunch/QuickShare/config"
 	"github.com/CPunch/QuickShare/util"
 	"github.com/go-chi/chi/v5"
 )
@@ -67,9 +68,9 @@ func (server *Service) rawEndpointHandler() http.HandlerFunc {
 // ========================== API handlers
 
 func (server *Service) uploadEndpointHandler() http.HandlerFunc {
+	maxUploadSize := server.ctx.Value(config.CONTEXT_MAXUPLOADSIZE).(int64)
 	return func(w http.ResponseWriter, r *http.Request) {
-		// TODO: max request body size should definitely be user definable. not sure about the file memory usage
-		if err := parseForm(w, r, 1*1024*1024*1024, 5*1024*1024); err != nil {
+		if err := parseForm(w, r, maxUploadSize*1024*1024, 5*1024*1024); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
 

@@ -74,5 +74,23 @@ func LoadConfig(ctx context.Context, configFile string) context.Context {
 	}
 
 	ctx = context.WithValue(ctx, config.CONTEXT_STORAGE, store)
+
+	// ============================ HTTP config
+	var maxSize int64
+
+	if cfg.HasSection("http") {
+		if cfg.Section("http").HasKey("maxUploadSize") {
+			maxSize, err = cfg.Section("http").Key("maxUploadSize").Int64()
+			if err != nil {
+				log.Fatal("Config section 'http': expected a number for 'maxUploadSize' key!")
+			}
+		} else {
+			log.Fatal("Config section 'http' missing 'maxUploadSize' key!")
+		}
+	} else {
+		log.Fatal("Config is missing a http section!")
+	}
+
+	ctx = context.WithValue(ctx, config.CONTEXT_MAXUPLOADSIZE, maxSize)
 	return ctx
 }
