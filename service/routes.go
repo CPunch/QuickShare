@@ -3,9 +3,9 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
+	"path"
 	"time"
 
 	"github.com/CPunch/QuickShare/config"
@@ -28,19 +28,16 @@ func jsonResponse(w http.ResponseWriter, data any) {
 	json.NewEncoder(w).Encode(data)
 }
 
-func (server *Service) staticClientHandler() http.Handler {
-	return http.FileServer(http.FS(server.app))
-}
-
-func (server *Service) reactRouterProxy() http.HandlerFunc {
-	// forward 'index.html'
+func (server *Service) staticClientHandler() http.HandlerFunc {
+	fileSys := http.FS(server.app)
+	fileServe := http.FileServer(fileSys)
 	return func(w http.ResponseWriter, r *http.Request) {
-		file, err := server.app.Open("index.html")
-		if err != nil {
-			log.Fatal(err)
+		// forward all 404s to the index.html
+		if _, err := fileSys.Open(path.Clean(r.URL.Path)); err != nil {
+			http.StripPrefix(r.URL.Path, fileServe).ServeHTTP(w, r)
+		} else {
+			fileServe.ServeHTTP(w, r)
 		}
-
-		io.Copy(w, file)
 	}
 }
 

@@ -47,8 +47,6 @@ func NewService(ctx context.Context) *Service {
 	}
 
 	service.mux.Handle("/*", service.staticClientHandler())
-	service.mux.Handle("/info/*", service.reactRouterProxy())
-	service.mux.Get("/raw/{id}", service.rawEndpointHandler())
 
 	service.mux.Post(config.UPLOAD_ENDPOINT, service.uploadEndpointHandler())
 	service.mux.Post(config.DELETE_ENDPOINT, service.deleteEndpointHandler())
