@@ -1,10 +1,9 @@
 package service
 
 import (
-	"embed"
 	"encoding/json"
 	"fmt"
-	"io/fs"
+	"io"
 	"log"
 	"net/http"
 	"time"
@@ -13,9 +12,6 @@ import (
 	"github.com/CPunch/QuickShare/util"
 	"github.com/go-chi/chi/v5"
 )
-
-//go:embed app/dist
-var clientFS embed.FS
 
 func parseForm(w http.ResponseWriter, r *http.Request, maxSize, maxUsage int64) error {
 	r.Body = http.MaxBytesReader(w, r.Body, maxSize) // accept request bodies up to maxSize
@@ -33,13 +29,19 @@ func jsonResponse(w http.ResponseWriter, data any) {
 }
 
 func (server *Service) staticClientHandler() http.Handler {
-	// "/index.html" now becomes "/app/dist/index.html"
-	app, err := fs.Sub(clientFS, "app/dist")
-	if err != nil {
-		log.Fatal(err)
-	}
+	return http.FileServer(http.FS(server.app))
+}
 
-	return http.FileServer(http.FS(app))
+func (server *Service) reactRouterProxy() http.HandlerFunc {
+	// forward 'index.html'
+	return func(w http.ResponseWriter, r *http.Request) {
+		file, err := server.app.Open("index.html")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		io.Copy(w, file)
+	}
 }
 
 func (server *Service) rawEndpointHandler() http.HandlerFunc {

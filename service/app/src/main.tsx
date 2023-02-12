@@ -15,6 +15,7 @@ import '@fontsource/roboto/700.css';
 
 import Root from './pages/Root';
 import Error from './pages/Error';
+import { Info, InfoLoader } from './pages/Info';
 
 const router = createBrowserRouter([
     {
@@ -22,6 +23,11 @@ const router = createBrowserRouter([
         element: <Root />,
         errorElement: <Error />
     },
+    {
+        path: "/info/:fileID",
+        element: <Info />,
+        loader: InfoLoader,
+    }
 ]);
 
 const darkTheme = createTheme({

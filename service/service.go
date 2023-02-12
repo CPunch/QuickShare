@@ -2,7 +2,9 @@ package service
 
 import (
 	"context"
+	"embed"
 	"fmt"
+	"io/fs"
 	"log"
 	"net/http"
 
@@ -13,8 +15,12 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+//go:embed app/dist
+var clientFS embed.FS
+
 type Service struct {
 	mux     *chi.Mux
+	app     fs.FS
 	storage storage.StorageHandler
 	db      *sql.DBHandler
 	ctx     context.Context
@@ -33,7 +39,15 @@ func NewService(ctx context.Context) *Service {
 
 	service := &Service{mux: chi.NewMux(), storage: storage, db: db, ctx: ctx}
 
+	// "/index.html" now becomes "/app/dist/index.html"
+	var err error
+	service.app, err = fs.Sub(clientFS, "app/dist")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	service.mux.Handle("/*", service.staticClientHandler())
+	service.mux.Handle("/info/*", service.reactRouterProxy())
 	service.mux.Get("/raw/{id}", service.rawEndpointHandler())
 
 	service.mux.Post(config.UPLOAD_ENDPOINT, service.uploadEndpointHandler())
