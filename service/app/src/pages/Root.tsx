@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet } from "react-router-dom";
 import { Card, CardContent, Grid } from '@mui/material';
+import FolderIcon from '@mui/icons-material/Folder';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 
 import { GetFiles, FileResult } from '../api/web';
@@ -31,19 +32,20 @@ const Root = () => {
         setValidPage(true);
     }
 
-    const fileListMemo = React.useMemo(() => {
-        return { files, setFiles };
-    }, [files])
-
     return (
         <TokenContext.Provider value={token}>
             <>{ validToken ?
                     <FileListContext.Provider value={{ fileList: files, setFileList: setFiles }}>
                             <NavbarProvider links={[
                                 {
-                                    title: 'Upload file',
+                                    title: 'Upload',
                                     link: '/upload',
                                     icon: FileUploadIcon
+                                },
+                                {
+                                    title: 'Files',
+                                    link: '/files',
+                                    icon: FolderIcon
                                 },
                             ]}>
                                 <Grid
@@ -60,7 +62,7 @@ const Root = () => {
                                                 width: "100%",
                                             }}
                                             >
-                                            <CardContent sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                                            <CardContent sx={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
                                                 <Outlet />
                                             </CardContent>
                                         </Card>
@@ -83,7 +85,7 @@ const Root = () => {
                                 width: "100%",
                             }}
                             >
-                            <CardContent sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                            <CardContent sx={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
                                 <TokenPrompt onToken={onToken}/>
                             </CardContent>
                         </Card>

@@ -19,8 +19,7 @@ const TokenPrompt = ({ onToken }: TokenProps) => {
 
     // load token from localStorage (if it exists!)
     const [tokenInput, setTokenInput] = React.useState(() => {
-        let tkn = localStorage.getItem(TOKEN_STORAGE)
-        return tkn === null ? "" : tkn
+        return localStorage.getItem(TOKEN_STORAGE) ?? "";
     });
 
     // update token in localStorage && call onToken() callback if token is valid

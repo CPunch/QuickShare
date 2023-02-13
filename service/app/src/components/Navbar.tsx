@@ -16,6 +16,7 @@ import Typography from '@mui/material/Typography';
 
 import { Link } from 'react-router-dom';
 import zIndex from '@mui/material/styles/zIndex';
+import { Badge } from '@mui/material';
 const drawerWidth = 200;
 
 interface SidebarLink {
@@ -24,13 +25,21 @@ interface SidebarLink {
     icon: React.JSXElementConstructor<any>,
 }
 
+interface FileBadgeContextType {
+    filesBadge: number,
+    setFilesBadge: React.Dispatch<React.SetStateAction<number>>
+}
+
 interface Props {
     links: SidebarLink[],
 }
 
+export const FileBadgeContext = React.createContext<FileBadgeContextType | null>(null);
+
 // thanks https://mui.com/material-ui/react-drawer/#ResponsiveDrawer.tsx !!
 export default function NavbarProvider({ children, links }: React.PropsWithChildren<Props>) {
     const [mobileOpen, setMobileOpen] = React.useState(false);
+    const [filesBadge, setFilesBadge] = React.useState(0);
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
@@ -41,12 +50,18 @@ export default function NavbarProvider({ children, links }: React.PropsWithChild
             <Toolbar /> {/* this is a little hacky, just get the alignment under our appbar */}
             <List>
                 {links.map((link) => (
-                    <ListItem key={link.title} disablePadding component={Link} to={link.link}>
-                        <ListItemButton>
+                    <ListItem key={ link.link } disablePadding component={ Link } to={ link.link }>
+                        <ListItemButton onClick={() => setFilesBadge(0)}>
                             <ListItemIcon>
-                                <link.icon size='large' />
+                                { link.link === "/files"
+                                    ?
+                                    <Badge badgeContent={filesBadge} color="secondary">
+                                        <link.icon size="large" />
+                                    </Badge>
+                                    :
+                                    <link.icon size="large" /> }
                             </ListItemIcon>
-                            <ListItemText primary={<Typography color='white' variant='button'>{link.title}</Typography>} />
+                            <ListItemText primary={<Typography color="white" variant="button">{link.title}</Typography>} />
                         </ListItemButton>
                     </ListItem>
                 ))}
@@ -79,7 +94,7 @@ export default function NavbarProvider({ children, links }: React.PropsWithChild
             </AppBar>
             <Box
                 component="nav"
-                sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+                sx={{ width: { sm: drawerWidth }}}
             >
                 <Drawer
                     variant="temporary"
@@ -108,9 +123,11 @@ export default function NavbarProvider({ children, links }: React.PropsWithChild
             </Box>
             <Box
                 component="main"
-                sx={{ flexGrow: 1, p: 3, width: '100%' }}
+                sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` }}}
             >
-                {children}
+                <FileBadgeContext.Provider value={{ filesBadge, setFilesBadge }}>
+                    {children}
+                </FileBadgeContext.Provider>
             </Box>
         </Box>
     );

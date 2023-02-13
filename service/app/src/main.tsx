@@ -15,6 +15,7 @@ import '@fontsource/roboto/700.css';
 import Root from './pages/Root';
 import Error from './pages/Error';
 import Upload from './pages/Upload';
+import Files from './pages/Files';
 import { Info, InfoLoader } from './pages/Info';
 
 const router = createBrowserRouter([
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
             {
                 path: "upload",
                 element: <Upload />
+            },
+            {
+                path: "files",
+                element: <Files />
             }
         ]
     },
@@ -48,7 +53,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
             <SnackbarProvider maxSnack={4} iconVariant={{
                 success: <CheckCircleOutlineIcon />,
                 error: <ErrorOutlineIcon />,
-            }} anchorOrigin={{ horizontal: 'right', vertical: 'top' }}>
+            }} anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}>
                 <CssBaseline />
                 <RouterProvider router={router} />
             </SnackbarProvider>
