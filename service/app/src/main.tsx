@@ -25,6 +25,10 @@ const router = createBrowserRouter([
         errorElement: <Error />,
         children: [
             {
+                path: "/",
+                element: <Files />
+            },
+            {
                 path: "upload",
                 element: <Upload />
             },
