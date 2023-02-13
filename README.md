@@ -20,8 +20,8 @@ Next, navigate to the web service in your browser and use the generated token to
 
 - `service`: Handles the http web service
     - `/app`: The frontend app hosted by the web service for web users
+    - `/jobs`: Handles misc. long-running tasks (like file expiration)
 - `cmd`: command line utils
-    - `/cli`: cli to share files from your home machine
     - `/service`: service to host the web service
 - `api`: general handlers
     - `/iface`: shared interface types
@@ -31,8 +31,6 @@ Next, navigate to the web service in your browser and use the generated token to
 - `util`: general utility functions
 
 TODOs:
-- cmd/cli: make cli pretty
-- cmd/cli: match service/app functionality
 - service: maybe add a /info/ route ? show file info; service/app: maybe add file previews (image viewer/video player)
 - service/app: general 'make things pretty'
 - *: grep 'TODO' && do them lol

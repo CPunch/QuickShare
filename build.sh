@@ -16,9 +16,3 @@ cd cmd/service/
 go build -tags netgo -ldflags '-w' -o ../../$OUTDIR/service
 cd ../../
 echo "Built $OUTDIR/service"
-
-echo "Building cli...."
-cd cmd/cli/
-go build -tags netgo -ldflags '-w' -o ../../$OUTDIR/cli
-cd ../../
-echo "Built $OUTDIR/cli"

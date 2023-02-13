@@ -16,7 +16,7 @@ export const TokenContext = React.createContext('');
 export const FileListContext = React.createContext<FileListContextType | null>(null);
 
 const Root = () => {
-    const [validToken, setValidPage] = React.useState<Boolean>(false);
+    const [validToken, setValidPage] = React.useState(false);
     const [token, setToken] = React.useState('');
     const [files, setFiles] = React.useState<FileResult[]>([]);
     const onToken = async (token: string) => {
