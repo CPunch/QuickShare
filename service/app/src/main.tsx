@@ -1,9 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import {createBrowserRouter, RouterProvider} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { SnackbarProvider } from 'notistack';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { Card, CardContent, Grid } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -15,13 +14,20 @@ import '@fontsource/roboto/700.css';
 
 import Root from './pages/Root';
 import Error from './pages/Error';
+import Upload from './pages/Upload';
 import { Info, InfoLoader } from './pages/Info';
 
 const router = createBrowserRouter([
     {
         path: "/",
         element: <Root />,
-        errorElement: <Error />
+        errorElement: <Error />,
+        children: [
+            {
+                path: "upload",
+                element: <Upload />
+            }
+        ]
     },
     {
         path: "/info/:fileID",
@@ -44,26 +50,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
                 error: <ErrorOutlineIcon />,
             }} anchorOrigin={{ horizontal: 'right', vertical: 'top' }}>
                 <CssBaseline />
-                <Grid
-                    container
-                    spacing={0}
-                    style={{ marginTop: '50px' }}>
-                    <Grid item xs={12} sx={{ width: "100%", display: 'flex', justifyContent: 'center'}}>
-                        <Card
-                            sx={{
-                                borderRadius: 2,
-                                margin: 2,
-                                padding: 0,
-                                maxWidth: 600,
-                                width: "100%",
-                            }}
-                            >
-                            <CardContent sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                                <RouterProvider router={router} />
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                </Grid>
+                <RouterProvider router={router} />
             </SnackbarProvider>
         </ThemeProvider>
     </React.StrictMode>

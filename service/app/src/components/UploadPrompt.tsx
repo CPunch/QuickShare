@@ -6,14 +6,11 @@ import ClearIcon from '@mui/icons-material/Clear';
 import ReportGmailerrorredIcon from '@mui/icons-material/ReportGmailerrorred';
 import FolderIcon from '@mui/icons-material/Folder';
 
-import { FileResult, UploadFile } from '../api/web';
+import { UploadFile } from '../api/web';
 import { RenderFileEntry } from './FileListEntry';
 import { useSnackbar } from 'notistack';
+import { TokenContext, FileListContext } from '../pages/Root';
 
-export interface UploadProps {
-    token: string,
-    files: FileResult[],
-};
 
 export type UploadEntry = {
     id: number,
@@ -35,12 +32,13 @@ const ExpireTimes = [
 
 let UID = 0;
 
-const UploadPrompt = ({ token, files }: UploadProps) => {
+const UploadPrompt = () => {
     const [uploadList, setUploadList] = React.useState<UploadEntry[]>([]);
-    const [fileList, setFileList] = React.useState<FileResult[]>(files);
     const [expireTime, setExpireTime] = React.useState("0s");
     const [selectedTab, setSelectedTab] = React.useState(0);
     const [newFilesBadge, setNewFilesBadge] = React.useState(0);
+    const token = React.useContext(TokenContext);
+    const { fileList, setFileList } = React.useContext(FileListContext) ?? {fileList: [], setFileList: () => {}};
     const { enqueueSnackbar } = useSnackbar();
 
     const updateUploadListEntry = (id: number, elems: any) => {
