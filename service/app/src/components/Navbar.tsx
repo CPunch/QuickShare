@@ -101,7 +101,7 @@ export default function NavbarProvider({ children }: React.PropsWithChildren<Pro
             </AppBar>
             <Box
                 component="nav"
-                sx={{ width: { sm: drawerWidth }}}
+                sx={{ width: { sm: drawerWidth, flexShrink: { sm: 0 } }}}
             >
                 <Drawer
                     variant="temporary"
@@ -130,7 +130,7 @@ export default function NavbarProvider({ children }: React.PropsWithChildren<Pro
             </Box>
             <Box
                 component="main"
-                sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` }}}
+                sx={{ flexGrow: 1, p: 2, width: { sm: `calc(100% - ${drawerWidth}px)`, xs: '100%' }}}
             >
                 <FileBadgeContext.Provider value={{ filesBadge, setFilesBadge }}>
                     {children}

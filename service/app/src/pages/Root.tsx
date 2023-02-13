@@ -43,13 +43,14 @@ const Root = () => {
                                 <Card
                                     sx={{
                                         borderRadius: 2,
-                                        margin: 2,
+                                        margin: 'auto',
+                                        marginTop: 2,
                                         padding: 0,
                                         maxWidth: 600,
                                         width: "100%",
                                     }}
                                     >
-                                    <CardContent sx={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
+                                    <CardContent sx={{ display: 'flex', justifyContent: 'center', maxWidth: '100%', width: '100%' }}>
                                         <Outlet />
                                     </CardContent>
                                 </Card>

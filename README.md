@@ -16,6 +16,8 @@ $ service host --port 80
 
 Next, navigate to the web service in your browser and use the generated token to login and start sharing!
 
+![ui-demo](https://user-images.githubusercontent.com/28796526/218421002-9471d84c-5ab1-435a-98cf-58049822fbab.gif)
+
 # Project structure
 
 - `service`: Handles the http web service
