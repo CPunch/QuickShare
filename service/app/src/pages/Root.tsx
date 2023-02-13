@@ -1,8 +1,6 @@
 import React from 'react';
 import { Outlet } from "react-router-dom";
 import { Card, CardContent, Grid } from '@mui/material';
-import FolderIcon from '@mui/icons-material/Folder';
-import FileUploadIcon from '@mui/icons-material/FileUpload';
 
 import { GetFiles, FileResult } from '../api/web';
 import NavbarProvider from '../components/Navbar';
@@ -35,41 +33,30 @@ const Root = () => {
     return (
         <TokenContext.Provider value={token}>
             <>{ validToken ?
-                    <FileListContext.Provider value={{ fileList: files, setFileList: setFiles }}>
-                            <NavbarProvider links={[
-                                {
-                                    title: 'Upload',
-                                    link: '/upload',
-                                    icon: FileUploadIcon
-                                },
-                                {
-                                    title: 'Files',
-                                    link: '/files',
-                                    icon: FolderIcon
-                                },
-                            ]}>
-                                <Grid
-                                    container
-                                    spacing={0}
-                                    style={{ marginTop: '50px' }}>
-                                    <Grid item xs={12} sx={{ width: "100%", display: 'flex', justifyContent: 'center'}}>
-                                        <Card
-                                            sx={{
-                                                borderRadius: 2,
-                                                margin: 2,
-                                                padding: 0,
-                                                maxWidth: 600,
-                                                width: "100%",
-                                            }}
-                                            >
-                                            <CardContent sx={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
-                                                <Outlet />
-                                            </CardContent>
-                                        </Card>
-                                    </Grid>
-                                </Grid>
-                            </NavbarProvider>
-                    </FileListContext.Provider>
+                <FileListContext.Provider value={{ fileList: files, setFileList: setFiles }}>
+                    <NavbarProvider>
+                        <Grid
+                            container
+                            spacing={0}
+                            style={{ marginTop: '50px' }}>
+                            <Grid item xs={12} sx={{ width: "100%", display: 'flex', justifyContent: 'center'}}>
+                                <Card
+                                    sx={{
+                                        borderRadius: 2,
+                                        margin: 2,
+                                        padding: 0,
+                                        maxWidth: 600,
+                                        width: "100%",
+                                    }}
+                                    >
+                                    <CardContent sx={{ display: 'flex', justifyContent: 'center', maxWidth: '100%' }}>
+                                        <Outlet />
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        </Grid>
+                    </NavbarProvider>
+                </FileListContext.Provider>
                 :
                 <Grid
                     container

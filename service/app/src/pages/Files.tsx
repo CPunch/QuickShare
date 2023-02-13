@@ -17,7 +17,7 @@ const Files = () => {
             newList.splice(indx, 1);
             return newList;
         });
-    }
+    };
 
     return (
         <Box sx={{ width: '100%' }}>
