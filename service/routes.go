@@ -71,6 +71,7 @@ func (server *Service) uploadEndpointHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := parseForm(w, r, maxUploadSize*1024*1024, 5*1024*1024); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
 		}
 
 		// grab form data
@@ -118,6 +119,7 @@ func (server *Service) deleteEndpointHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := parseForm(w, r, 1*1024*1024, 1*1024*1024); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
 		}
 
 		// grab form data
@@ -155,6 +157,7 @@ func (server *Service) verifyTokenEndpointHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := parseForm(w, r, 1*1024*1024, 1*1024*1024); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
 		}
 
 		// grab form data
@@ -174,6 +177,7 @@ func (server *Service) fileListEndpointHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := parseForm(w, r, 1*1024*1024, 1*1024*1024); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
 		}
 
 		// grab form data
