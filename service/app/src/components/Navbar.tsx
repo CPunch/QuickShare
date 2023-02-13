@@ -68,7 +68,7 @@ export default function NavbarProvider({ children }: React.PropsWithChildren<Pro
                             <ListItemIcon>
                                 { link.icon }
                             </ListItemIcon>
-                            <ListItemText primary={<Typography color="white" variant="button">{link.title}</Typography>} />
+                            <ListItemText primary={<Typography color="white" variant="button">{ link.title }</Typography>} />
                         </ListItemButton>
                     </ListItem>
                 ))}

@@ -60,13 +60,15 @@ const Root = () => {
                 :
                 <Grid
                     container
+                    justifyContent="center"
+                    alignContent="center"
                     spacing={0}
-                    style={{ marginTop: '50px' }}>
-                    <Grid item xs={12} sx={{ width: "100%", display: 'flex', justifyContent: 'center'}}>
+                    sx={{ width: "100%", height: "100vh", display: 'flex', justifyContent: 'center', alignContent: 'center', margin: 'auto' }}>
+                    <Grid item xs={12} sx={{ width: "100%", margin: 2 }}>
                         <Card
                             sx={{
                                 borderRadius: 2,
-                                margin: 2,
+                                margin: 'auto',
                                 padding: 0,
                                 maxWidth: 600,
                                 width: "100%",
