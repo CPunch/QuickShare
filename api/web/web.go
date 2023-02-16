@@ -197,26 +197,13 @@ func (client *WebClient) VerifyToken() (*iface.Token, error) {
 func (client *WebClient) GetFileList() ([]iface.File, error) {
 	httpClient := &http.Client{}
 	body := &bytes.Buffer{}
-	writer := multipart.NewWriter(body)
-
-	// write token
-	tknw, err := writer.CreateFormField("token")
-	if err != nil {
-		return nil, err
-	}
-
-	if _, err := io.Copy(tknw, strings.NewReader(client.token)); err != nil {
-		return nil, err
-	}
-	writer.Close()
 
 	// send request
-	req, err := http.NewRequest("POST", client.baseUrl+config.FILELIST_ENDPOINT, body)
+	req, err := http.NewRequest("POST", client.baseUrl+config.FILELIST_ENDPOINT+"?token="+client.token, body)
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Set("Content-Type", writer.FormDataContentType())
 	res, err := httpClient.Do(req)
 	if err != nil {
 		return nil, err
@@ -240,4 +227,39 @@ func (client *WebClient) GetFileList() ([]iface.File, error) {
 	}
 
 	return files, nil
+}
+
+func (client *WebClient) GetFileInfo(id string) (*iface.File, error) {
+	httpClient := &http.Client{}
+	body := &bytes.Buffer{}
+
+	// send request
+	req, err := http.NewRequest("GET", client.baseUrl+config.INFO_ENDPOINT+"?id="+id, body)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	if res.StatusCode != http.StatusOK {
+		// service responds with a detailed message (usually)
+		resBody, err := io.ReadAll(res.Body)
+		if err != nil {
+			return nil, fmt.Errorf("Service responded with status code %d!", res.StatusCode)
+		}
+
+		return nil, fmt.Errorf("Service responded with %s!", string(resBody))
+	}
+
+	// read response
+	var file iface.File
+	dec := json.NewDecoder(res.Body)
+	if err := dec.Decode(&file); err != nil {
+		return nil, err
+	}
+
+	return &file, nil
 }

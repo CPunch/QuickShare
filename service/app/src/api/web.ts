@@ -102,14 +102,9 @@ const VerifyToken = async (token: string): Promise<ApiResponse<boolean>> => {
 };
 
 const GetFiles = async (token: string): Promise<ApiResponse<FileResult[]>> => {
-    // create request data
-    let form = new FormData();
-    form.append("token", token);
-
     return axios.request({
-        method: "POST",
-        url: "/api/filelist",
-        data: form,
+        method: "GET",
+        url: `/api/filelist?token=${token}`,
         validateStatus: status => {
             return status >= 200 && status != 404;
         },

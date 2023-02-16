@@ -15,3 +15,9 @@ CREATE TABLE IF NOT EXISTS files (
     uploadTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(TokenID) REFERENCES tokens(ID)
 );
+
+-- CREATE TABLE IF NOT EXISTS meta {
+--     Lock char(1) PRIMARY KEY NOT NULL DEFAULT 'X',
+--     version INT NOT NULL DEFAULT 0,
+--     CHECK (Lock='X')
+-- }

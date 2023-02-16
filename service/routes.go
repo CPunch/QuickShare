@@ -173,15 +173,35 @@ func (server *Service) verifyTokenEndpointHandler() http.HandlerFunc {
 	}
 }
 
-func (server *Service) fileListEndpointHandler() http.HandlerFunc {
+func (server *Service) infoEndpointHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := parseForm(w, r, 1*1024*1024, 1*1024*1024); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+		if r.URL.Query().Get("id") == "" {
+			http.Error(w, "Missing id!", http.StatusBadRequest)
 			return
 		}
 
-		// grab form data
-		token := r.FormValue("token")
+		// grab file data
+		id := r.URL.Query().Get("id")
+		file, err := server.db.GetFileById(id)
+		if err != nil || file == nil {
+			http.Error(w, "Unknown file ID!", http.StatusNotFound)
+			return
+		}
+
+		// respond with file list
+		jsonResponse(w, file)
+	}
+}
+
+func (server *Service) fileListEndpointHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Query().Get("token") == "" {
+			http.Error(w, "Missing token!", http.StatusBadRequest)
+			return
+		}
+
+		// grab token && files
+		token := r.URL.Query().Get("token")
 		tkn, err := server.db.GetTokenById(token)
 		if err != nil || tkn == nil {
 			http.Error(w, "Unauthorized token!", http.StatusUnauthorized)
