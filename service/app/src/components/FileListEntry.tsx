@@ -17,7 +17,6 @@ export type FileEntry = {
 }
 
 export type RenderFileEntryProps = {
-    token: string,
     fileResult: FileResult,
     removeFileListEntry: (id: string) => void,
 }
@@ -63,12 +62,12 @@ const simpleCopy = (text: string): boolean => {
     return true;
 }
 
-const RenderFileEntry = ({ token, fileResult, removeFileListEntry }: RenderFileEntryProps) => {
+const RenderFileEntry = ({ fileResult, removeFileListEntry }: RenderFileEntryProps) => {
     const [isOpen, setIsOpen] = React.useState(true);
     const { enqueueSnackbar } = useSnackbar();
 
     const onDelete = async () => {
-        const { data, error } = await DeleteFile(token, fileResult.id);
+        const { data, error } = await DeleteFile(fileResult.id);
         if (data === true) {
             removeFileListEntry(fileResult.id);
             enqueueSnackbar("Successfully deleted " + fileResult.name + "!", {

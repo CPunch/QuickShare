@@ -3,8 +3,9 @@ package config
 const CONTEXT_DB = "raw_db"
 const CONTEXT_STORAGE = "raw_storage"
 const CONTEXT_MAXUPLOADSIZE = "raw_maxuploadsize"
+const CONTEXT_TOKEN = "http_token"
 
-const VERIFYTOKEN_ENDPOINT = "/api/token"
+const VERIFY_ENDPOINT = "/api/verify"
 const INFO_ENDPOINT = "/api/info"
 const UPLOAD_ENDPOINT = "/api/upload"
 const DELETE_ENDPOINT = "/api/delete"

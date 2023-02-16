@@ -21,7 +21,7 @@ const Root = () => {
     const [files, setFiles] = React.useState<FileResult[]>([]);
     const onToken = async (token: string) => {
         setToken(token);
-        let { data, error } = await GetFiles(token);
+        let { data, error } = await GetFiles();
         if (data == null) {
             console.error(error)
             data = [];

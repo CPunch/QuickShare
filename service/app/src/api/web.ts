@@ -15,80 +15,21 @@ export interface ApiResponse<T> {
     error: string | null,
 }
 
-// TODO: move these parameters into a props interface ?
-const UploadFile = async (token: string, expire: string, fileName: string, fileData: File, abort: AbortController, progressCallback: (progress: number) => void): Promise<ApiResponse<FileResult>> => {
-    // create request data
-    let form = new FormData();
-    form.append("token", token);
-    form.append("expire", expire);
-    form.append("file", fileData, fileName);
-
-    return axios.request({
-        method: "POST",
-        url: "/api/upload",
-        data: form,
-        signal: abort.signal,
-        onUploadProgress: (p) => {
-            if (p.total === undefined) {
-                return
-            }
-
-            progressCallback(Math.round((p.loaded * 100) / p.total))
-        },
-        validateStatus: status => {
-            return status >= 200 && status != 404;
-        },
-    }).then(response => {
-        if (response.status != 200) {
-            console.error('Failed to upload ' + fileName + '!', 'Result from service: ' + response.data)
-            return {data: null, error: response.data}
-        }
-
-        return {data: response.data, error: null}
-    }).catch(reason => {
-        console.error(reason)
-        return {data: null, error: reason}
-    });
-}
-
-const DeleteFile = async (token: string, id: string): Promise<ApiResponse<boolean>> => {
-    // create request data
-    let form = new FormData();
-    form.append("token", token);
-    form.append("id", id);
-
-    return axios.request({
-        method: "POST",
-        url: "/api/delete",
-        data: form,
-        validateStatus: status => {
-            return status >= 200 && status != 404;
-        },
-    }).then(response => {
-        if (response.status != 200) {
-            console.error('Failed to delete ' + id + '!', 'Result from service: ' + response.data)
-            return {data: null, error: response.data}
-        }
-
-        return {data: true, error: null};
-    }).catch(reason => {
-        console.error(reason);
-        return {data: null, error: reason};
-    });
-}
+const instance = axios.create({
+    withCredentials: true,
+    validateStatus: status => {
+        return status >= 200 && status != 404;
+    },
+});
 
 const VerifyToken = async (token: string): Promise<ApiResponse<boolean>> => {
-    // create request data
     let form = new FormData();
     form.append("token", token);
 
-    return axios.request({
+    return instance.request({
         method: "POST",
-        url: "/api/token",
+        url: "/api/verify",
         data: form,
-        validateStatus: status => {
-            return status >= 200 && status != 404;
-        },
     }).then(response => {
         if (response.status == 200) {
             return {data: true, error: null};
@@ -101,13 +42,10 @@ const VerifyToken = async (token: string): Promise<ApiResponse<boolean>> => {
     });
 };
 
-const GetFiles = async (token: string): Promise<ApiResponse<FileResult[]>> => {
-    return axios.request({
+const GetFiles = async (): Promise<ApiResponse<FileResult[]>> => {
+    return instance.request({
         method: "GET",
-        url: `/api/filelist?token=${token}`,
-        validateStatus: status => {
-            return status >= 200 && status != 404;
-        },
+        url: "/api/filelist",
     }).then(response => {
         if (response.status != 200) {
             return {data: null, error: response.data};
@@ -122,6 +60,55 @@ const GetFiles = async (token: string): Promise<ApiResponse<FileResult[]>> => {
         console.error(reason);
         return {data: null, error: reason};
     });
-}
+};
 
-export { UploadFile, DeleteFile, VerifyToken, GetFiles }
+// TODO: move these parameters into a props interface ?
+const UploadFile = async (expire: string, fileName: string, fileData: File, abort: AbortController, progressCallback: (progress: number) => void): Promise<ApiResponse<FileResult>> => {
+    // create request data
+    let form = new FormData();
+    form.append("expire", expire);
+    form.append("file", fileData, fileName);
+
+    return instance.request({
+        method: "POST",
+        url: "/api/upload",
+        data: form,
+        signal: abort.signal,
+        onUploadProgress: (p) => {
+            if (p.total === undefined) {
+                return
+            }
+
+            progressCallback(Math.round((p.loaded * 100) / p.total))
+        },
+    }).then(response => {
+        if (response.status != 200) {
+            console.error('Failed to upload ' + fileName + '!', 'Result from service: ' + response.data)
+            return {data: null, error: response.data}
+        }
+
+        return {data: response.data, error: null}
+    }).catch(reason => {
+        console.error(reason)
+        return {data: null, error: reason}
+    });
+};
+
+const DeleteFile = async (id: string): Promise<ApiResponse<boolean>> => {
+    return instance.request({
+        method: "DELETE",
+        url: `/api/delete?id=${id}`,
+    }).then(response => {
+        if (response.status != 200) {
+            console.error('Failed to delete ' + id + '!', 'Result from service: ' + response.data)
+            return {data: null, error: response.data}
+        }
+
+        return {data: true, error: null};
+    }).catch(reason => {
+        console.error(reason);
+        return {data: null, error: reason};
+    });
+};
+
+export { VerifyToken, GetFiles, UploadFile, DeleteFile }

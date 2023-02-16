@@ -46,13 +46,20 @@ func NewService(ctx context.Context) *Service {
 		log.Fatal(err)
 	}
 
+	// unauthenticated routes
 	service.mux.Handle("/*", service.staticClientHandler())
-
-	service.mux.Post(config.VERIFYTOKEN_ENDPOINT, service.verifyTokenEndpointHandler())
+	service.mux.Handle("/raw/{id}", service.rawEndpointHandler())
 	service.mux.Get(config.INFO_ENDPOINT, service.infoEndpointHandler())
-	service.mux.Post(config.UPLOAD_ENDPOINT, service.uploadEndpointHandler())
-	service.mux.Post(config.DELETE_ENDPOINT, service.deleteEndpointHandler())
-	service.mux.Get(config.FILELIST_ENDPOINT, service.fileListEndpointHandler())
+	service.mux.Post(config.VERIFY_ENDPOINT, service.verifyTokenEndpointHandler())
+
+	// authenticated routes
+	service.mux.Group(func(r chi.Router) {
+		r.Use(service.authenticateToken)
+
+		r.Get(config.FILELIST_ENDPOINT, service.fileListEndpointHandler())
+		r.Post(config.UPLOAD_ENDPOINT, service.uploadEndpointHandler())
+		r.Delete(config.DELETE_ENDPOINT, service.deleteEndpointHandler())
+	})
 
 	jobs.StartJobs(ctx)
 	return service

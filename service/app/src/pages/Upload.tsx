@@ -82,7 +82,7 @@ const Upload = () => {
             if (uploadData.isUploading) return;
 
             updateUploadListEntry(uploadData.id, { isUploading: true })
-            const { data, error } = await UploadFile(token, expireTime, uploadData.name, uploadData.raw, uploadData.abort, (progress) => {        
+            const { data, error } = await UploadFile(expireTime, uploadData.name, uploadData.raw, uploadData.abort, (progress) => {
                 updateUploadListEntry(uploadData.id, { progress });
             });
 

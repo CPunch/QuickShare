@@ -7,7 +7,6 @@ import { RenderFileEntry } from '../components/FileListEntry';
 import { TokenContext, FileListContext } from './Root';
 
 const Files = () => {
-    const token = React.useContext(TokenContext);
     const { fileList, setFileList } = React.useContext(FileListContext) ?? {fileList: [], setFileList: () => {}};
 
     const removeFileListEntry = (id: string) => {
@@ -25,7 +24,7 @@ const Files = () => {
                 fileList.length > 0
                 ?
                 fileList.map((fileResult) => (
-                    <RenderFileEntry token={token} fileResult={fileResult} removeFileListEntry={removeFileListEntry} />
+                    <RenderFileEntry fileResult={fileResult} removeFileListEntry={removeFileListEntry} />
                 ))
                 :
                 <Box sx={{ padding: 2, textAlign: 'center' }}>
