@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func (db *DBHandler) GetFileById(id string) (*iface.File, error) {
+func GetFileById(db DBQuery, id string) (*iface.File, error) {
 	row, err := db.Query("SELECT * FROM files WHERE ID=?", id)
 	if err != nil {
 		return nil, err
@@ -24,7 +24,7 @@ func (db *DBHandler) GetFileById(id string) (*iface.File, error) {
 }
 
 // files are stored many to one. 1 file on disk can represent many files in the db
-func (db *DBHandler) GetFilesByHash(hash string) ([]iface.File, error) {
+func GetFilesByHash(db DBQuery, hash string) ([]iface.File, error) {
 	row, err := db.Query("SELECT * FROM files WHERE Sha256=?", hash)
 	if err != nil {
 		return nil, err
@@ -38,7 +38,7 @@ func (db *DBHandler) GetFilesByHash(hash string) ([]iface.File, error) {
 	return files, nil
 }
 
-func (db *DBHandler) GetAllFiles() ([]iface.File, error) {
+func GetAllFiles(db DBQuery) ([]iface.File, error) {
 	rows, _ := db.Query("SELECT * FROM files")
 
 	var files []iface.File
@@ -49,7 +49,7 @@ func (db *DBHandler) GetAllFiles() ([]iface.File, error) {
 	return files, nil
 }
 
-func (db *DBHandler) GetFilesByToken(token string) ([]iface.File, error) {
+func GetFilesByToken(db DBQuery, token string) ([]iface.File, error) {
 	rows, _ := db.Query("SELECT * FROM files WHERE TokenID=?", token)
 
 	var files []iface.File
@@ -60,7 +60,7 @@ func (db *DBHandler) GetFilesByToken(token string) ([]iface.File, error) {
 	return files, nil
 }
 
-func (db *DBHandler) InsertFile(token, name, hash, mime string, size int64, expire time.Duration) (*iface.File, error) {
+func InsertFile(db DBQuery, token, name, hash, mime string, size int64, expire time.Duration) (*iface.File, error) {
 	rows, err := db.Query(
 		"INSERT INTO files(ID, TokenID, Name, Sha256, Size, Mime, Expire) VALUES(?, ?, ?, ?, ?, ?, ?) RETURNING *",
 		uuid.New().String(),
@@ -83,7 +83,7 @@ func (db *DBHandler) InsertFile(token, name, hash, mime string, size int64, expi
 	return &dbFile, nil
 }
 
-func (db *DBHandler) RemoveFile(id string) (*iface.File, error) {
+func RemoveFile(db DBQuery, id string) (*iface.File, error) {
 	rows, err := db.Query("DELETE FROM files WHERE ID=? RETURNING *", id)
 	if err != nil {
 		return nil, err
@@ -97,7 +97,7 @@ func (db *DBHandler) RemoveFile(id string) (*iface.File, error) {
 	return &dbFile, nil
 }
 
-func (db *DBHandler) GetExpiredFiles(limit int) ([]iface.File, error) {
+func GetExpiredFiles(db DBQuery, limit int) ([]iface.File, error) {
 	rows, err := db.Query("SELECT * FROM files WHERE Expire <= ? ORDER BY Expire LIMIT ?", time.Now(), limit)
 	if err != nil {
 		return nil, err

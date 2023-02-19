@@ -7,7 +7,7 @@ import (
 	"github.com/CPunch/QuickShare/api/iface"
 )
 
-func (db *DBHandler) GetTokenById(id string) (*iface.Token, error) {
+func GetTokenById(db DBQuery, id string) (*iface.Token, error) {
 	row, err := db.Query("SELECT * FROM tokens WHERE ID=?", id)
 	if err != nil {
 		return nil, err
@@ -21,7 +21,7 @@ func (db *DBHandler) GetTokenById(id string) (*iface.Token, error) {
 	return &tkn, nil
 }
 
-func (db *DBHandler) GetAllTokens() ([]iface.Token, error) {
+func GetAllTokens(db DBQuery) ([]iface.Token, error) {
 	row, err := db.Query("SELECT * FROM tokens")
 	if err != nil {
 		return nil, err
@@ -35,7 +35,7 @@ func (db *DBHandler) GetAllTokens() ([]iface.Token, error) {
 	return tkn, nil
 }
 
-func (db *DBHandler) InsertToken(isAdmin bool) (*iface.Token, error) {
+func InsertToken(db DBQuery, isAdmin bool) (*iface.Token, error) {
 	row, err := db.Query("INSERT INTO tokens (ID, IsAdmin) VALUES(?, ?) RETURNING *", uuid.New().String(), isAdmin)
 	if err != nil {
 		return nil, err
@@ -49,7 +49,7 @@ func (db *DBHandler) InsertToken(isAdmin bool) (*iface.Token, error) {
 	return &tkn, nil
 }
 
-func (db *DBHandler) RemoveToken(id string) (*iface.Token, error) {
+func RemoveToken(db DBQuery, id string) (*iface.Token, error) {
 	rows, err := db.Query("DELETE FROM tokens WHERE ID=? RETURNING *", id)
 	if err != nil {
 		return nil, err

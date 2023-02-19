@@ -25,7 +25,7 @@ func JanitorJob(ctx context.Context) {
 	}
 
 	// grab expired files
-	expiredFiles, err := db.GetExpiredFiles(JANITOR_FILE_LIMIT)
+	expiredFiles, err := sql.GetExpiredFiles(db, JANITOR_FILE_LIMIT)
 	if err != nil {
 		log.Panic("[service/jobs/JanitorJob]: Failed to get expired files: ", err)
 	}

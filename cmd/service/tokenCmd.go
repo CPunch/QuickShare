@@ -57,7 +57,7 @@ func (s *tokenCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interf
 
 	// $ token --new
 	if s.createNew {
-		tkn, err := db.InsertToken(false)
+		tkn, err := sql.InsertToken(db, false)
 		if err != nil {
 			log.Print("[cmd/service/tokenCmd]: SQL Error while inserting token ", err)
 			return subcommands.ExitFailure
@@ -70,7 +70,7 @@ func (s *tokenCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interf
 
 	// $ token --remove
 	if s.remove != "" {
-		tkn, err := db.GetTokenById(s.remove)
+		tkn, err := sql.GetTokenById(db, s.remove)
 		if err != nil || tkn == nil {
 			log.Print("[cmd/service/tokenCmd]: Failed to find token! ", err)
 			return subcommands.ExitFailure
@@ -86,7 +86,7 @@ func (s *tokenCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interf
 
 	// $ token --list
 	if s.listTokens {
-		tkns, err := db.GetAllTokens()
+		tkns, err := sql.GetAllTokens(db)
 		if err != nil {
 			log.Print("[cmd/service/tokenCmd]: SQL Error while grabbing tokens ", err)
 			return subcommands.ExitFailure

@@ -1,6 +1,7 @@
 package util
 
 import (
+	_sql "database/sql"
 	"fmt"
 
 	"github.com/CPunch/QuickShare/api/iface"
@@ -8,15 +9,13 @@ import (
 	"github.com/CPunch/QuickShare/api/storage"
 )
 
-// removes the file from the database by ID, then if no other files exist with the same hash
-// in the database, the file is also removed from storage.
-func RemoveFile(storage storage.StorageHandler, db *sql.DBHandler, file *iface.File) error {
-	_, err := db.RemoveFile(file.ID)
+func removeFileTx(storage storage.StorageHandler, db *sql.DBHandler, file *iface.File, tx *_sql.Tx) error {
+	_, err := sql.RemoveFile(tx, file.ID)
 	if err != nil {
 		return fmt.Errorf("Failed to remove file: %v", err)
 	}
 
-	files, err := db.GetFilesByHash(file.Sha256)
+	files, err := sql.GetFilesByHash(tx, file.Sha256)
 	if err != nil {
 		return fmt.Errorf("Failed to get files by hash (%s): %v", file.Sha256, err)
 	}
@@ -30,4 +29,12 @@ func RemoveFile(storage storage.StorageHandler, db *sql.DBHandler, file *iface.F
 	}
 
 	return nil
+}
+
+// removes the file from the database by ID, then if no other files exist with the same hash
+// in the database, the file is also removed from storage.
+func RemoveFile(storage storage.StorageHandler, db *sql.DBHandler, file *iface.File) error {
+	return db.Transaction(func(tx *_sql.Tx) error {
+		return removeFileTx(storage, db, file, tx)
+	})
 }
