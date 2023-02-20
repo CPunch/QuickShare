@@ -29,7 +29,6 @@ Next, navigate to the web service in your browser and use the generated token to
     - `/iface`: shared interface types
     - `/sql`: database handler and driver
     - `/storage`: file storage
-    - `/web`: web client (for go)
 - `util`: general utility functions
 
 TODOs:
