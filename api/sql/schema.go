@@ -19,8 +19,8 @@ type DBQuery interface {
 //go:embed migrations/newdb.sql
 var createDBQuery string
 
-func OpenLiteDB(dbpath string) (*DBHandler, error) {
-	sqliteFmt := fmt.Sprintf("%s", dbpath)
+func OpenLiteDB(dbPath string) (*DBHandler, error) {
+	sqliteFmt := fmt.Sprintf("%s", dbPath)
 
 	db, err := sql.Open("sqlite3", sqliteFmt)
 	if err != nil {
