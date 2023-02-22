@@ -27,7 +27,7 @@ Next, navigate to the web service in your browser and use the generated token to
     - `/service`: service to host the web service
 - `api`: general handlers
     - `/iface`: shared interface types
-    - `/sql`: database handler and driver
+    - `/db`: database handler and driver
     - `/storage`: file storage
 - `util`: general utility functions
 

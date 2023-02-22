@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/CPunch/QuickShare/api/sql"
+	"github.com/CPunch/QuickShare/api/db"
 	"github.com/CPunch/QuickShare/api/storage"
 	"github.com/CPunch/QuickShare/config"
 	"gopkg.in/ini.v1"
@@ -37,12 +37,12 @@ func LoadConfig(ctx context.Context, configFile string) context.Context {
 	}
 
 	// ============================ Database config
-	var db *sql.DBHandler
+	var dbHndlr *db.DBHandler
 
 	if cfg.HasSection("db.sqlite") {
 		if cfg.Section("db.sqlite").HasKey("file") {
 			dbPath := cfg.Section("db.sqlite").Key("file").String()
-			db, err = sql.OpenLiteDB(dbPath)
+			dbHndlr, err = db.OpenLiteDB(dbPath)
 			if err != nil {
 				log.Print(err)
 			}
@@ -53,11 +53,11 @@ func LoadConfig(ctx context.Context, configFile string) context.Context {
 		log.Fatal("Config is missing a 'db.*' section!")
 	}
 
-	if err := db.Setup(); err != nil {
+	if err := dbHndlr.Setup(); err != nil {
 		log.Fatal(err)
 	}
 
-	ctx = context.WithValue(ctx, config.CONTEXT_DB, db)
+	ctx = context.WithValue(ctx, config.CONTEXT_DBHANDLER, dbHndlr)
 
 	// ============================ Storage config
 	var store storage.StorageHandler

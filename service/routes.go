@@ -9,8 +9,8 @@ import (
 	"path"
 	"time"
 
+	"github.com/CPunch/QuickShare/api/db"
 	"github.com/CPunch/QuickShare/api/iface"
-	"github.com/CPunch/QuickShare/api/sql"
 	"github.com/CPunch/QuickShare/config"
 	"github.com/CPunch/QuickShare/util"
 	"github.com/go-chi/chi/v5"
@@ -39,7 +39,7 @@ func (server *Service) authenticateToken(next http.Handler) http.Handler {
 			return
 		}
 
-		tkn, err := sql.GetTokenById(server.db, token.Value)
+		tkn, err := db.GetTokenById(server.dbHndlr, token.Value)
 		if err != nil || tkn == nil {
 			http.Error(w, "Unauthorized token!", http.StatusUnauthorized)
 			return
@@ -75,7 +75,7 @@ func (server *Service) rawEndpointHandler() http.HandlerFunc {
 		}
 
 		// craft response
-		file, err := sql.GetFileById(server.db, id)
+		file, err := db.GetFileById(server.dbHndlr, id)
 		if err != nil {
 			http.Error(w, "File ID doesn't exist!", http.StatusNotFound)
 			return
@@ -97,7 +97,7 @@ func (server *Service) infoEndpointHandler() http.HandlerFunc {
 		}
 
 		// grab file data
-		file, err := sql.GetFileById(server.db, id)
+		file, err := db.GetFileById(server.dbHndlr, id)
 		if err != nil || file == nil {
 			http.Error(w, "Unknown file ID!", http.StatusNotFound)
 			return
@@ -123,7 +123,7 @@ func (server *Service) verifyTokenEndpointHandler() http.HandlerFunc {
 			return
 		}
 
-		tkn, err := sql.GetTokenById(server.db, token)
+		tkn, err := db.GetTokenById(server.dbHndlr, token)
 		if err != nil || tkn == nil {
 			http.Error(w, "Unauthorized token!", http.StatusUnauthorized)
 			return
@@ -145,7 +145,7 @@ func (server *Service) fileListEndpointHandler() http.HandlerFunc {
 			return
 		}
 
-		files, err := sql.GetFilesByToken(server.db, tkn.ID)
+		files, err := db.GetFilesByToken(server.dbHndlr, tkn.ID)
 		if err != nil {
 			http.Error(w, "Failed to grab files", http.StatusInternalServerError)
 			return
@@ -192,7 +192,7 @@ func (server *Service) uploadEndpointHandler() http.HandlerFunc {
 			log.Fatal("[service/uploadEndpointHandler]: StorageHandler error ", err)
 		}
 
-		storedFile, err = sql.InsertFile(server.db, tkn.ID, storedFile.Name, storedFile.Sha256, storedFile.Mime, storedFile.Size, expireTime)
+		storedFile, err = db.InsertFile(server.dbHndlr, tkn.ID, storedFile.Name, storedFile.Sha256, storedFile.Mime, storedFile.Size, expireTime)
 		if err != nil {
 			http.Error(w, "Failed to insert file into the database!", http.StatusInternalServerError)
 			log.Fatal("[service/uploadEndpointHandler]: SQL Error ", err)
@@ -219,7 +219,7 @@ func (server *Service) deleteEndpointHandler() http.HandlerFunc {
 			return
 		}
 
-		file, err := sql.GetFileById(server.db, id)
+		file, err := db.GetFileById(server.dbHndlr, id)
 		if err != nil || file == nil {
 			http.Error(w, "Unknown file ID!", http.StatusNotFound)
 			return
@@ -232,7 +232,7 @@ func (server *Service) deleteEndpointHandler() http.HandlerFunc {
 		}
 
 		// delete file
-		if err := util.RemoveFile(server.storage, server.db, file); err != nil {
+		if err := util.RemoveFile(server.storage, server.dbHndlr, file); err != nil {
 			http.Error(w, fmt.Sprintf("Failed to delete file: %v!", err), http.StatusInternalServerError)
 			return
 		}

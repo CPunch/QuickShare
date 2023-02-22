@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/CPunch/QuickShare/api/sql"
+	"github.com/CPunch/QuickShare/api/db"
 	"github.com/CPunch/QuickShare/api/storage"
 	"github.com/CPunch/QuickShare/config"
 	"github.com/CPunch/QuickShare/util"
@@ -19,19 +19,19 @@ func JanitorJob(ctx context.Context) {
 		log.Panic("[service/jobs/JanitorJob]: no storage instance attached to context!")
 	}
 
-	db := ctx.Value(config.CONTEXT_DB).(*sql.DBHandler)
-	if db == nil {
+	dbHndlr := ctx.Value(config.CONTEXT_DBHANDLER).(*db.DBHandler)
+	if dbHndlr == nil {
 		log.Panic("[service/jobs/JanitorJob]: no db instance attached to context!")
 	}
 
 	// grab expired files
-	expiredFiles, err := sql.GetExpiredFiles(db, JANITOR_FILE_LIMIT)
+	expiredFiles, err := db.GetExpiredFiles(dbHndlr, JANITOR_FILE_LIMIT)
 	if err != nil {
 		log.Panic("[service/jobs/JanitorJob]: Failed to get expired files: ", err)
 	}
 
 	for _, file := range expiredFiles {
-		if err := util.RemoveFile(storage, db, &file); err != nil {
+		if err := util.RemoveFile(storage, dbHndlr, &file); err != nil {
 			log.Panic("[service/jobs/JanitorJob]: ", err)
 		}
 

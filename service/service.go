@@ -8,7 +8,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/CPunch/QuickShare/api/sql"
+	"github.com/CPunch/QuickShare/api/db"
 	"github.com/CPunch/QuickShare/api/storage"
 	"github.com/CPunch/QuickShare/config"
 	"github.com/CPunch/QuickShare/service/jobs"
@@ -22,7 +22,7 @@ type Service struct {
 	mux     *chi.Mux
 	app     fs.FS
 	storage storage.StorageHandler
-	db      *sql.DBHandler
+	dbHndlr *db.DBHandler
 	ctx     context.Context
 }
 
@@ -32,12 +32,12 @@ func NewService(ctx context.Context) *Service {
 		log.Fatal("[service/NewService]: no storage instance attached to context!")
 	}
 
-	db := ctx.Value(config.CONTEXT_DB).(*sql.DBHandler)
-	if db == nil {
+	dbHndlr := ctx.Value(config.CONTEXT_DBHANDLER).(*db.DBHandler)
+	if dbHndlr == nil {
 		log.Fatal("[service/NewService]: no db instance attached to context!")
 	}
 
-	service := &Service{mux: chi.NewMux(), storage: storage, db: db, ctx: ctx}
+	service := &Service{mux: chi.NewMux(), storage: storage, dbHndlr: dbHndlr, ctx: ctx}
 
 	// "/index.html" now becomes "/app/dist/index.html"
 	var err error

@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/CPunch/QuickShare/api/db"
 	"github.com/CPunch/QuickShare/api/iface"
-	"github.com/CPunch/QuickShare/api/sql"
 	"github.com/CPunch/QuickShare/api/storage"
 	"github.com/CPunch/QuickShare/config"
 	"github.com/CPunch/QuickShare/util"
@@ -43,8 +43,8 @@ func printToken(tkn *iface.Token) {
 }
 
 func (s *tokenCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
-	db := ctx.Value(config.CONTEXT_DB).(*sql.DBHandler)
-	if db == nil {
+	dbHndlr := ctx.Value(config.CONTEXT_DBHANDLER).(*db.DBHandler)
+	if dbHndlr == nil {
 		log.Print("[cmd/service/tokenCmd]: no db instance attached to context!")
 		return subcommands.ExitFailure
 	}
@@ -57,7 +57,7 @@ func (s *tokenCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interf
 
 	// $ token --new
 	if s.createNew {
-		tkn, err := sql.InsertToken(db, false)
+		tkn, err := db.InsertToken(dbHndlr, false)
 		if err != nil {
 			log.Print("[cmd/service/tokenCmd]: SQL Error while inserting token ", err)
 			return subcommands.ExitFailure
@@ -70,13 +70,13 @@ func (s *tokenCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interf
 
 	// $ token --remove
 	if s.remove != "" {
-		tkn, err := sql.GetTokenById(db, s.remove)
+		tkn, err := db.GetTokenById(dbHndlr, s.remove)
 		if err != nil || tkn == nil {
 			log.Print("[cmd/service/tokenCmd]: Failed to find token! ", err)
 			return subcommands.ExitFailure
 		}
 
-		if err := util.RemoveToken(storage, db, tkn); err != nil {
+		if err := util.RemoveToken(storage, dbHndlr, tkn); err != nil {
 			log.Print("[cmd/service/tokenCmd]: Failed to remove token! ", err)
 			return subcommands.ExitFailure
 		}
@@ -86,7 +86,7 @@ func (s *tokenCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interf
 
 	// $ token --list
 	if s.listTokens {
-		tkns, err := sql.GetAllTokens(db)
+		tkns, err := db.GetAllTokens(dbHndlr)
 		if err != nil {
 			log.Print("[cmd/service/tokenCmd]: SQL Error while grabbing tokens ", err)
 			return subcommands.ExitFailure

@@ -1,6 +1,6 @@
 package config
 
-const CONTEXT_DB = "raw_db"
+const CONTEXT_DBHANDLER = "raw_db"
 const CONTEXT_STORAGE = "raw_storage"
 const CONTEXT_MAXUPLOADSIZE = "raw_maxuploadsize"
 const CONTEXT_TOKEN = "http_token"
