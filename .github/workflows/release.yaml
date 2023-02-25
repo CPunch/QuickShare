@@ -1,0 +1,40 @@
+name: Release Build
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-installer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - name: Compile Release
+        run: |
+          echo "Building frontend...."
+          cd service/app/
+          npm i
+          npm run build
+          cd ../../
+
+          echo "Building service...."
+          cd cmd/service/
+          go get
+          env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -tags netgo -o ../../service-linux-amd64
+          env CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -tags netgo -o ../../service-linux-arm64
+          cd ../../
+        shell: bash
+      - name: Push release artifacts
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            service-linux-amd64
+            service-linux-arm64
+          body: Automated build for ${{ github.ref }}.${{ github.sha }}
