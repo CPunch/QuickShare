@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
 import { RenderFileEntry } from '../components/FileListEntry';
-import { TokenContext, FileListContext } from './Root';
+import { FileListContext } from './Root';
 
 const Files = () => {
     const { fileList, setFileList } = React.useContext(FileListContext) ?? {fileList: [], setFileList: () => {}};

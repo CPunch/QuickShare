@@ -5,7 +5,7 @@ import (
 	_ "embed"
 	"fmt"
 
-	_ "github.com/mattn/go-sqlite3"
+	_ "github.com/glebarez/go-sqlite"
 )
 
 type DBHandler struct {
@@ -22,7 +22,7 @@ var createDBQuery string
 func OpenLiteDB(dbPath string) (*DBHandler, error) {
 	sqliteFmt := fmt.Sprintf("%s", dbPath)
 
-	db, err := sql.Open("sqlite3", sqliteFmt)
+	db, err := sql.Open("sqlite", sqliteFmt)
 	if err != nil {
 		return nil, err
 	}

@@ -13,6 +13,6 @@ cd ../../
 
 echo "Building service...."
 cd cmd/service/
-go build -tags netgo -ldflags '-w' -o ../../$OUTDIR/service
+go build -tags netgo -o ../../$OUTDIR/service
 cd ../../
 echo "Built $OUTDIR/service"
