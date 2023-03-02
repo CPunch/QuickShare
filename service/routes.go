@@ -83,7 +83,7 @@ func (server *Service) rawEndpointHandler() http.HandlerFunc {
 
 		if err = server.storage.SendFile(file, w); err != nil {
 			http.Error(w, "Unexpected error occurred, please try again!", http.StatusInternalServerError)
-			log.Fatal("[service/rawEndpointHandler]: Failed sending file! ", err)
+			log.Print("[service/rawEndpointHandler]: Failed sending file! ", err)
 		}
 	}
 }
