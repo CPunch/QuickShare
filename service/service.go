@@ -28,16 +28,9 @@ type Service struct {
 
 func NewService(ctx context.Context) *Service {
 	storage := ctx.Value(config.CONTEXT_STORAGE).(storage.StorageHandler)
-	if storage == nil {
-		log.Fatal("[service/NewService]: no storage instance attached to context!")
-	}
-
 	dbHndlr := ctx.Value(config.CONTEXT_DBHANDLER).(*db.DBHandler)
-	if dbHndlr == nil {
-		log.Fatal("[service/NewService]: no db instance attached to context!")
-	}
 
-	service := &Service{mux: chi.NewMux(), storage: storage, dbHndlr: dbHndlr, ctx: ctx}
+	service := &Service{storage: storage, dbHndlr: dbHndlr, ctx: ctx}
 
 	// "/index.html" now becomes "/app/dist/index.html"
 	var err error
@@ -46,14 +39,16 @@ func NewService(ctx context.Context) *Service {
 		log.Fatal(err)
 	}
 
+	serviceMux := chi.NewRouter()
+
 	// unauthenticated routes
-	service.mux.Handle("/*", service.staticClientHandler())
-	service.mux.Handle("/raw/{id}", service.rawEndpointHandler())
-	service.mux.Get(config.INFO_ENDPOINT, service.infoEndpointHandler())
-	service.mux.Post(config.VERIFY_ENDPOINT, service.verifyTokenEndpointHandler())
+	serviceMux.Handle("/*", service.staticClientHandler())
+	serviceMux.Handle("/raw/{id}", service.rawEndpointHandler())
+	serviceMux.Get(config.INFO_ENDPOINT, service.infoEndpointHandler())
+	serviceMux.Post(config.VERIFY_ENDPOINT, service.verifyTokenEndpointHandler())
 
 	// authenticated routes
-	service.mux.Group(func(r chi.Router) {
+	serviceMux.Group(func(r chi.Router) {
 		r.Use(service.authenticateToken)
 
 		r.Get(config.FILELIST_ENDPOINT, service.fileListEndpointHandler())
@@ -61,6 +56,7 @@ func NewService(ctx context.Context) *Service {
 		r.Delete(config.DELETE_ENDPOINT, service.deleteEndpointHandler())
 	})
 
+	service.mux = serviceMux
 	jobs.StartJobs(ctx)
 	return service
 }

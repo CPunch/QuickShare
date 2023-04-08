@@ -44,16 +44,7 @@ func printToken(tkn *iface.Token) {
 
 func (s *tokenCommand) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
 	dbHndlr := ctx.Value(config.CONTEXT_DBHANDLER).(*db.DBHandler)
-	if dbHndlr == nil {
-		log.Print("[cmd/service/tokenCmd]: no db instance attached to context!")
-		return subcommands.ExitFailure
-	}
-
 	storage := ctx.Value(config.CONTEXT_STORAGE).(storage.StorageHandler)
-	if storage == nil {
-		log.Print("[cmd/service/tokenCmd]: no storage instance attached to context!")
-		return subcommands.ExitFailure
-	}
 
 	// $ token --new
 	if s.createNew {

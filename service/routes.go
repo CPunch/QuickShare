@@ -55,6 +55,7 @@ func (server *Service) authenticateToken(next http.Handler) http.Handler {
 func (server *Service) staticClientHandler() http.HandlerFunc {
 	fileSys := http.FS(server.app)
 	fileServe := http.FileServer(fileSys)
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		// forward all 404s to the index.html
 		if _, err := fileSys.Open(path.Clean(r.URL.Path)); err != nil {
