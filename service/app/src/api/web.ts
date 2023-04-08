@@ -71,7 +71,7 @@ const UploadFile = async (expire: string, fileName: string, fileData: File, abor
 
     return instance.request({
         method: "POST",
-        url: "/api/upload",
+        url: "/api/file",
         data: form,
         signal: abort.signal,
         onUploadProgress: (p) => {
@@ -97,7 +97,7 @@ const UploadFile = async (expire: string, fileName: string, fileData: File, abor
 const DeleteFile = async (id: string): Promise<ApiResponse<boolean>> => {
     return instance.request({
         method: "DELETE",
-        url: `/api/delete?id=${id}`,
+        url: `/api/file?id=${id}`,
     }).then(response => {
         if (response.status != 200) {
             console.error('Failed to delete ' + id + '!', 'Result from service: ' + response.data)
@@ -105,6 +105,26 @@ const DeleteFile = async (id: string): Promise<ApiResponse<boolean>> => {
         }
 
         return {data: true, error: null};
+    }).catch(reason => {
+        console.error(reason);
+        return {data: null, error: reason};
+    });
+};
+
+const GetFileInfo = async (id: string): Promise<ApiResponse<FileResult>> => {
+    return instance.request({
+        method: "GET",
+        url: `/api/file?id=${id}`,
+    }).then(response => {
+        if (response.status != 200) {
+            return {data: null, error: response.data};
+        }
+
+        if (response.data === null) {
+            return {data: [], error: null};
+        }
+
+        return {data: response.data, error: null};
     }).catch(reason => {
         console.error(reason);
         return {data: null, error: reason};

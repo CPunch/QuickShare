@@ -39,22 +39,25 @@ func NewService(ctx context.Context) *Service {
 		log.Fatal(err)
 	}
 
-	serviceMux := chi.NewRouter()
-
 	// unauthenticated routes
+	serviceMux := chi.NewRouter()
 	serviceMux.Handle("/*", service.staticClientHandler())
 	serviceMux.Handle("/raw/{id}", service.rawEndpointHandler())
-	serviceMux.Get(config.INFO_ENDPOINT, service.infoEndpointHandler())
-	serviceMux.Post(config.VERIFY_ENDPOINT, service.verifyTokenEndpointHandler())
+	serviceMux.Post("/api/verify", service.verifyTokenEndpointHandler())
 
-	// authenticated routes
-	serviceMux.Group(func(r chi.Router) {
+	// API
+	apiMux := chi.NewMux()
+	apiMux.Group(func(r chi.Router) {
 		r.Use(service.authenticateToken)
 
-		r.Get(config.FILELIST_ENDPOINT, service.fileListEndpointHandler())
-		r.Post(config.UPLOAD_ENDPOINT, service.uploadEndpointHandler())
-		r.Delete(config.DELETE_ENDPOINT, service.deleteEndpointHandler())
+		r.Get("/filelist", service.fileListEndpointHandler())
+
+		// file REST
+		r.Post("/file", service.uploadEndpointHandler())
+		r.Get("/file", service.infoEndpointHandler())
+		r.Delete("/file", service.deleteEndpointHandler())
 	})
+	serviceMux.Mount("/api", apiMux)
 
 	service.mux = serviceMux
 	jobs.StartJobs(ctx)
