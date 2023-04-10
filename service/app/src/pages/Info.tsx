@@ -14,7 +14,7 @@ const PreviewRenderer = (file: FileResult) => {
 
     switch (generalMime) {
         case 'image': return (<img src={rawURL} style={{ maxWidth: '100%' }}></img>);
-        case 'video': return (<video controls><source src={rawURL} style={{ maxWidth: '100%' }}/></video>);
+        case 'video': return (<video style={{ maxWidth: '100%' }} controls><source src={rawURL} /></video>);
     }
 }
 
