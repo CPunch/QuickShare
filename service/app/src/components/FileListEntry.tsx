@@ -153,17 +153,7 @@ const RenderFileEntry = ({ fileResult, removeFileListEntry }: RenderFileEntryPro
                 <Grid container spacing={1}>
                     <Grid item xs={6} alignItems="left" justifyContent="left" sx={{ display: 'flex', alignItems: 'center' }}>
                         <Chip size="small" icon={<ContentPasteGoIcon />} variant="outlined" label="Download Link" clickable onClick={() => copyWrapper(window.location.origin + '/raw/' + fileResult!.id)} />
-                        <Chip size="small" icon={<ContentPasteGoIcon />} variant="outlined" label="Copy URL" clickable onClick={() => {
-                            if (simpleCopy(window.location.origin + '/raw/' + fileResult!.id)) {
-                                enqueueSnackbar('Copied ' + fileResult.name + ' URL!', {
-                                    variant: 'success',
-                                });
-                            } else {
-                                enqueueSnackbar('Failed to copy ' + fileResult.name + ' URL!', {
-                                    variant: 'error',
-                                });
-                            }
-                        }} />
+                        <Chip size="small" icon={<ContentPasteGoIcon />} variant="outlined" label="Preview Link" clickable onClick={() => copyWrapper(window.location.origin + '/info/' + fileResult!.id)} />
                     </Grid>
                     <Grid item xs={6} alignItems="right" justifyContent="right" sx={{ display: 'flex', alignItems: 'center' }}>
                         <Tooltip title="Trash">

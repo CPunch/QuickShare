@@ -1,6 +1,6 @@
 import React from 'react';
 import Dropzone from "react-dropzone";
-import { Paper, Box, Typography, Divider, FormHelperText, FormControl, Tabs, Tab, MenuItem, Select, Grid, LinearProgress, Button, IconButton, Badge } from "@mui/material";
+import { Paper, Box, Typography, Divider, FormHelperText, FormControl, MenuItem, Select, Grid, LinearProgress, Button, IconButton } from "@mui/material";
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import ClearIcon from '@mui/icons-material/Clear';
 
