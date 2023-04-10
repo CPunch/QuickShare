@@ -131,4 +131,4 @@ const GetFileInfo = async (id: string): Promise<ApiResponse<FileResult>> => {
     });
 };
 
-export { VerifyToken, GetFiles, UploadFile, DeleteFile }
+export { VerifyToken, GetFiles, UploadFile, DeleteFile, GetFileInfo }
