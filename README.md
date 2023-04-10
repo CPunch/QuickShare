@@ -32,6 +32,5 @@ Next, navigate to the web service in your browser and use the generated token to
 - `util`: general utility functions
 
 TODOs:
-- service: maybe add a /info/ route ? show file info; service/app: maybe add file previews (image viewer/video player)
 - service/app: general 'make things pretty'
 - *: grep 'TODO' && do them lol
