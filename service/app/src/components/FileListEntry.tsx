@@ -16,6 +16,10 @@ export type FileEntry = {
     raw: File,
 }
 
+export type RenderFileInfoEntryProps = {
+    file: FileResult,
+}
+
 export type RenderFileEntryProps = {
     fileResult: FileResult,
     removeFileListEntry: (id: string) => void,
@@ -62,6 +66,34 @@ const simpleCopy = (text: string): boolean => {
     return true;
 }
 
+const FileInfo = ({ file }: RenderFileInfoEntryProps) => {
+    return (<>
+        <Grid container spacing={0} sx={{ paddingTop: 0.5, paddingBottom: 0.5, textAlign: 'left' }}>
+            <Grid item xs={9}>
+                <Tooltip title={ file.name }>
+                    <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'Name: ' + file.name }</Typography>
+                </Tooltip>
+            </Grid>
+            <Grid item xs={3} textAlign="right">
+                <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'Size: ' + sizeAbbreviate(file.size) }</Typography>
+            </Grid>
+            <Grid item xs={12}>
+                <Tooltip title={ file.hash }>
+                    <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'SHA256: ' + file.hash.toUpperCase() }</Typography>
+                </Tooltip>
+            </Grid>
+            <Grid item xs={6}>
+                <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'Uploaded: ' + file.uploadTime.toString() }</Typography>
+            </Grid>
+            { file.expire !== null && (
+                <Grid item xs={6} textAlign="right">
+                    <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'Expires: ' + file.expire.toString() }</Typography>
+                </Grid>
+            )}
+        </Grid>
+    </>)
+}
+
 const RenderFileEntry = ({ fileResult, removeFileListEntry }: RenderFileEntryProps) => {
     const [isOpen, setIsOpen] = React.useState(true);
     const { enqueueSnackbar } = useSnackbar();
@@ -76,6 +108,18 @@ const RenderFileEntry = ({ fileResult, removeFileListEntry }: RenderFileEntryPro
             setIsOpen(true);
         } else {
             enqueueSnackbar("Failed to delete " + fileResult.name + ": " + error, {
+                variant: 'error',
+            });
+        }
+    }
+
+    const copyWrapper = (url: string) => {
+        if (simpleCopy(url)) {
+            enqueueSnackbar('Copied ' + fileResult.name + ' URL!', {
+                variant: 'success',
+            });
+        } else {
+            enqueueSnackbar('Failed to copy ' + fileResult.name + ' URL!', {
                 variant: 'error',
             });
         }
@@ -105,31 +149,10 @@ const RenderFileEntry = ({ fileResult, removeFileListEntry }: RenderFileEntryPro
             </Grid>
             <Collapse in={!isOpen}>
                 <Divider sx={{ paddingTop: 1}} />
-                <Grid container spacing={0} sx={{ paddingTop: 0.5, paddingBottom: 0.5 }}>
-                    <Grid item xs={9}>
-                        <Tooltip title={ fileResult.name }>
-                            <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'Name: ' + fileResult.name }</Typography>
-                        </Tooltip>
-                    </Grid>
-                    <Grid item xs={3} textAlign="right">
-                        <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'Size: ' + sizeAbbreviate(fileResult.size) }</Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Tooltip title={ fileResult.hash }>
-                            <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'SHA256: ' + fileResult.hash.toUpperCase() }</Typography>
-                        </Tooltip>
-                    </Grid>
-                    <Grid item xs={6}>
-                        <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'Uploaded: ' + fileResult.uploadTime.toString() }</Typography>
-                    </Grid>
-                    { fileResult.expire !== null && (
-                        <Grid item xs={6} textAlign="right">
-                            <Typography noWrap fontFamily="Monospace" fontSize="0.6rem">{ 'Expires: ' + fileResult.expire.toString() }</Typography>
-                        </Grid>
-                    )}
-                </Grid>
+                <FileInfo file={fileResult} />
                 <Grid container spacing={1}>
                     <Grid item xs={6} alignItems="left" justifyContent="left" sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Chip size="small" icon={<ContentPasteGoIcon />} variant="outlined" label="Download Link" clickable onClick={() => copyWrapper(window.location.origin + '/raw/' + fileResult!.id)} />
                         <Chip size="small" icon={<ContentPasteGoIcon />} variant="outlined" label="Copy URL" clickable onClick={() => {
                             if (simpleCopy(window.location.origin + '/raw/' + fileResult!.id)) {
                                 enqueueSnackbar('Copied ' + fileResult.name + ' URL!', {
@@ -159,4 +182,4 @@ const RenderFileEntry = ({ fileResult, removeFileListEntry }: RenderFileEntryPro
     )
 }
 
-export { RenderFileEntry }
+export { RenderFileEntry, FileInfo }
