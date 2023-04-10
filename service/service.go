@@ -44,6 +44,7 @@ func NewService(ctx context.Context) *Service {
 	serviceMux.Handle("/*", service.staticClientHandler())
 	serviceMux.Handle("/raw/{id}", service.rawEndpointHandler())
 	serviceMux.Post("/api/verify", service.verifyTokenEndpointHandler())
+	serviceMux.Get("/api/file", service.infoEndpointHandler())
 
 	// API
 	apiMux := chi.NewMux()
@@ -54,7 +55,6 @@ func NewService(ctx context.Context) *Service {
 
 		// file REST
 		r.Post("/file", service.uploadEndpointHandler())
-		r.Get("/file", service.infoEndpointHandler())
 		r.Delete("/file", service.deleteEndpointHandler())
 	})
 	serviceMux.Mount("/api", apiMux)
